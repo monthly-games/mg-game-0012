@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "game_id": "game_0012",
+    "code_name": "MG-0012",
+    "title_kr": "연말 레이드 이벤트RPG",
+    "title_en": "Year-End Raid Event RPG",
+    "version": "0.1.0",
+    "last_updated": "2025-01-01"
+  },
+  "overview": {
+    "genre_tags": ["raid", "jrpg", "event"],
+    "target_audience": {
+      "age": "15-35",
+      "region": ["KR", "SEA"],
+      "play_style": "casual-hardcore"
+    },
+    "core_loop": "연속 레이드를 진행하며 보스를 물리치고, 시즌 이벤트로 특별 보상을 획득한다",
+    "unique_selling_point": "연속 레이드와 시즌 이벤트의 조화"
+  },
+  "gameplay": {
+    "core_mechanics": [
+      {
+        "name": "연속 레이드",
+        "description": "연속으로 보스를 공략하며 난이도 상승"
+      },
+      {
+        "name": "JRPG 전투",
+        "description": "턴제 전투로 전략적인 스킬 운용"
+      },
+      {
+        "name": "시즌 이벤트",
+        "description": "정기적인 시즌 이벤트로 특별 보상 제공"
+      }
+    ],
+    "progression": {
+      "type": "raid_tier",
+      "description": "레이드 티어와 시즌 진행으로 발전"
+    },
+    "session_length": "10-20분"
+  },
+  "economy": {
+    "currencies": [
+      {
+        "name": "골드",
+        "type": "soft",
+        "sources": ["레이드 클리어", "퀘스트", "이벤트"],
+        "sinks": ["영웅 강화", "장비 업그레이드", "스킬 강화"]
+      },
+      {
+        "name": "레이드 토큰",
+        "type": "event",
+        "sources": ["레이드 클리어", "시즌 보상"],
+        "sinks": ["특별 아이템", "한정 영웅"]
+      },
+      {
+        "name": "보석",
+        "type": "hard",
+        "sources": ["인앱 구매", "업적", "이벤트"],
+        "sinks": ["에너지 충전", "가챠", "골드 구매"]
+      }
+    ],
+    "monetization": {
+      "model": "F2P + IAP",
+      "iap_items": ["보석 패키지", "배틀 패스", "시즌 패스"],
+      "ad_placements": ["보상형 광고 (에너지, 보상 2배)", "인터스티셜 (레이드 클리어 후)"]
+    }
+  },
+  "technical": {
+    "platform": ["Android", "iOS"],
+    "engine": "Flutter + Flame",
+    "backend": "Firebase",
+    "analytics": "GA4 + BigQuery"
+  }
+}
