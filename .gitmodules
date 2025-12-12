@@ -1,0 +1,12 @@
+[submodule "common/game"]
+	path = common/game
+	url = https://github.com/monthly-games/mg-common-game.git
+[submodule "common/backend"]
+	path = common/backend
+	url = https://github.com/monthly-games/mg-common-backend.git
+[submodule "common/analytics"]
+	path = common/analytics
+	url = https://github.com/monthly-games/mg-common-analytics.git
+[submodule "common/infra"]
+	path = common/infra
+	url = https://github.com/monthly-games/mg-common-infra.git
