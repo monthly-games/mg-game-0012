@@ -22,6 +22,7 @@ void main() async {
   runApp(const MyApp());
 }
 
+void _setupDI() {
   if (!GetIt.I.isRegistered<AudioManager>()) {
     GetIt.I.registerSingleton<AudioManager>(AudioManager());
   }

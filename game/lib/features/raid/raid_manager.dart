@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../event/event_manager.dart';
 
 enum RaidPhase { active, victory, defeat }
 
@@ -49,10 +50,14 @@ class RaidManager extends ChangeNotifier {
 
   RaidPhase _phase = RaidPhase.active;
 
+  // Event Manager for tracking seasonal progress
+  EventManager? _eventManager;
+
   double get bossHp => _bossHp;
   double get maxBossHp => _maxBossHp;
   double get timeRemaining => _timeRemaining;
   RaidPhase get phase => _phase;
+  EventManager? get eventManager => _eventManager;
 
   int get gold => GetIt.I<GoldManager>().currentGold;
   double get currentTime => _totalTime - _timeRemaining;
@@ -100,6 +105,7 @@ class RaidManager extends ChangeNotifier {
   double _pendingGold = 0.0;
 
   RaidManager() {
+    _eventManager = EventManager();
     _loadState();
   }
 
@@ -137,6 +143,9 @@ class RaidManager extends ChangeNotifier {
     _bossHp -= amount;
     _damageDealtTotal += amount;
 
+    // Track damage for event milestones
+    _eventManager?.addDamage(amount.toInt());
+
     // Reward: 1 Gold per 100 Damage (tuned for balance)
     _pendingGold += amount * 0.01;
     if (_pendingGold >= 1.0) {
@@ -149,6 +158,7 @@ class RaidManager extends ChangeNotifier {
       _bossHp = 0;
       _phase = RaidPhase.victory;
       GetIt.I<GoldManager>().addGold(1000); // Boss Kill Bonus
+      _eventManager?.recordBossKill();
     }
     notifyListeners();
   }
@@ -176,6 +186,7 @@ class RaidManager extends ChangeNotifier {
     _timeRemaining = _totalTime;
     _damageDealtTotal = 0;
     _phase = RaidPhase.active;
+    _eventManager?.recordRaidParticipation();
     notifyListeners();
   }
 

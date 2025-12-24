@@ -8,7 +8,9 @@ import 'package:mg_common_game/core/ui/overlays/settings_game_overlay.dart';
 import 'package:mg_common_game/core/ui/overlays/tutorial_game_overlay.dart';
 import '../features/raid/raid_game.dart';
 import '../features/raid/raid_manager.dart';
+import '../features/event/event_manager.dart';
 import 'hud/mg_raid_hud.dart';
+import 'screens/event_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -31,6 +33,7 @@ class MainScreenContent extends StatefulWidget {
 
 class _MainScreenContentState extends State<MainScreenContent> {
   late final RaidGame _game;
+  bool _showEventScreen = false;
 
   @override
   void initState() {
@@ -42,6 +45,15 @@ class _MainScreenContentState extends State<MainScreenContent> {
   Widget build(BuildContext context) {
     // We don't need to watch RaidManager here for the game instance,
     // but sub-widgets do.
+    final raidManager = context.read<RaidManager>();
+
+    // Show Event Screen if toggled
+    if (_showEventScreen && raidManager.eventManager != null) {
+      return EventScreen(
+        eventManager: raidManager.eventManager!,
+        onBack: () => setState(() => _showEventScreen = false),
+      );
+    }
 
     return Scaffold(
       body: Stack(
@@ -100,6 +112,8 @@ class _MainScreenContentState extends State<MainScreenContent> {
                   .where((h) => h.isUnlocked)
                   .fold<double>(0, (sum, h) => sum + h.dps)
                   .toInt();
+              final hasActiveEvent = rm.eventManager?.currentEvent?.phase ==
+                  EventPhase.active;
               return MGRaidHud(
                 gold: rm.gold,
                 currentTime: rm.currentTime,
@@ -108,6 +122,8 @@ class _MainScreenContentState extends State<MainScreenContent> {
                 bossHp: rm.bossHp.toInt(),
                 bossMaxHp: rm.maxBossHp.toInt(),
                 bossName: 'ICE GOLEM',
+                hasActiveEvent: hasActiveEvent ?? false,
+                onEvent: () => setState(() => _showEventScreen = true),
                 onPause: () {
                   _game.pauseEngine();
                   _game.overlays.add('PauseGame');

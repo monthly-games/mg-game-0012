@@ -12,6 +12,8 @@ class MGRaidHud extends StatelessWidget {
   final int bossMaxHp;
   final String? bossName;
   final VoidCallback? onPause;
+  final VoidCallback? onEvent;
+  final bool hasActiveEvent;
 
   const MGRaidHud({
     super.key,
@@ -23,6 +25,8 @@ class MGRaidHud extends StatelessWidget {
     this.bossMaxHp = 100,
     this.bossName,
     this.onPause,
+    this.onEvent,
+    this.hasActiveEvent = false,
   });
 
   @override
@@ -53,13 +57,25 @@ class MGRaidHud extends StatelessWidget {
                 // DPS 표시
                 _buildDpsDisplay(),
 
-                // 일시정지 버튼
-                MGIconButton(
-                  icon: Icons.pause,
-                  onPressed: onPause,
-                  size: 44,
-                  backgroundColor: Colors.black54,
-                  color: Colors.white,
+                // 버튼들
+                Row(
+                  children: [
+                    // 이벤트 버튼
+                    if (onEvent != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _buildEventButton(),
+                      ),
+
+                    // 일시정지 버튼
+                    MGIconButton(
+                      icon: Icons.pause,
+                      onPressed: onPause,
+                      size: 44,
+                      backgroundColor: Colors.black54,
+                      color: Colors.white,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -89,6 +105,58 @@ class MGRaidHud extends StatelessWidget {
           // 중앙 영역 확장 (게임 영역)
           const Expanded(child: SizedBox()),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEventButton() {
+    return GestureDetector(
+      onTap: onEvent,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: hasActiveEvent ? Colors.blue.shade700 : Colors.black54,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: hasActiveEvent ? Colors.cyan : Colors.white24,
+            width: hasActiveEvent ? 2 : 1,
+          ),
+          boxShadow: hasActiveEvent
+              ? [
+                  BoxShadow(
+                    color: Colors.cyan.withValues(alpha: 0.5),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : null,
+        ),
+        child: Stack(
+          children: [
+            const Center(
+              child: Icon(
+                Icons.event,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            if (hasActiveEvent)
+              Positioned(
+                top: 2,
+                right: 2,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
