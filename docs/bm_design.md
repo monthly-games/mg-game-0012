@@ -1,7 +1,13 @@
-# 연말 레이드 이벤트RPG - BM 설계 문서
+﻿# 연말 레이드 이벤트RPG - BM 설계 문서
 
 > game_id: game_0012
 > repo: mg-game-0012
+> title_kr: 연말 레이드 이벤트RPG
+> title_en: Year-End Raid Event RPG
+> genre_tags: raid, jrpg, event
+> doc_type: bm_design
+> source_of_truth: docs/design/gdd_game_0012.json
+> last_updated: 2025-12-19
 
 ---
 
