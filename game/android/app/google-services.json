@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "mg-games-dev",
+    "storage_bucket": "mg-games-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:game0012",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0012"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "YOUR_ANDROID_API_KEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
