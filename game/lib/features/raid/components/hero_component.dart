@@ -1,7 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 import '../raid_manager.dart';
 
 class HeroComponent extends SpriteComponent with HasGameRef {
