@@ -1,13 +1,222 @@
 {
   "project_info": {
-    "project_number": "000000000000",
+    "project_number": "701294998464",
     "project_id": "mg-games-dev",
-    "storage_bucket": "mg-games-dev.appspot.com"
+    "storage_bucket": "mg-games-dev.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:000000000000:android:game0012",
+        "mobilesdk_app_id": "1:701294998464:android:8a7a3203b9552c3f01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0001"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:841798a3a30db8b501ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0002"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:107e43274b871c0e01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0003"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:6cce83b5d296fcb701ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0004"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:1b743c5b32db691301ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0005"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:317fdbdef0d19fcc01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0006"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:719a43e9ad44578c01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0007"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:36f574d0cea8a5cc01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0008"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:ca63f5c498efee4f01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0009"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:f6bf80644264c8f401ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0010"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:6d5d05361d33782d01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0011"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:dd6530b1c51b603101ce25",
         "android_client_info": {
           "package_name": "com.monthlygames.game0012"
         }
@@ -15,7 +224,64 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "YOUR_ANDROID_API_KEY"
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:fda81d42c87ae6c901ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0013"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:62007b3197ffa28a01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0014"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701294998464:android:7e2a70b193cd6feb01ce25",
+        "android_client_info": {
+          "package_name": "com.monthlygames.game0015"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCGcPrsolaAKddtr5dzAugwZrSvSXz7wE"
         }
       ],
       "services": {
