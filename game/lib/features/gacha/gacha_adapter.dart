@@ -85,14 +85,14 @@ class WarriorGachaAdapter extends ChangeNotifier {
     final result = _gachaManager.pull(_poolId);
     if (result == null) return null;
     notifyListeners();
-    return _convertToItem(result);
+    return _convertToItem(result.item);
   }
 
   /// 10연차
   List<Warrior> pullTen() {
-    final results = _gachaManager.pullMulti(_poolId, 10);
+    final results = _gachaManager.multiPull(_poolId, count: 10);
     notifyListeners();
-    return results.map(_convertToItem).toList();
+    return results.map((r) => _convertToItem(r.item)).toList();
   }
 
   Warrior _convertToItem(GachaItem item) {
@@ -104,13 +104,13 @@ class WarriorGachaAdapter extends ChangeNotifier {
   }
 
   /// 천장까지 남은 횟수
-  int get pullsUntilPity => _gachaManager.pullsUntilPity(_poolId);
+  int get pullsUntilPity => _gachaManager.remainingPity(_poolId);
 
   /// 총 뽑기 횟수
-  int get totalPulls => _gachaManager.getTotalPulls(_poolId);
+  int get totalPulls => _gachaManager.getPityState(_poolId)?.totalPulls ?? 0;
 
   /// 통계
-  Map<GachaRarity, int> get stats => _gachaManager.getStatistics(_poolId);
+  GachaStats get stats => _gachaManager.getStats(_poolId);
 
   Map<String, dynamic> toJson() => _gachaManager.toJson();
   void loadFromJson(Map<String, dynamic> json) {
