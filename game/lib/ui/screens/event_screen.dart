@@ -41,15 +41,15 @@ class EventScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.event_busy, size: 64, color: MGColors.textMediumEmphasis),
-            SizedBox(height: MGSpacing.md),
+            const Icon(Icons.event_busy, size: 64, color: MGColors.textMediumEmphasis),
+            const SizedBox(height: MGSpacing.md),
             Text(
               'No Active Events',
               style: MGTextStyles.headline.copyWith(
                 color: MGColors.textMediumEmphasis,
               ),
             ),
-            SizedBox(height: MGSpacing.sm),
+            const SizedBox(height: MGSpacing.sm),
             Text(
               'Check back later for seasonal events!',
               style: MGTextStyles.body.copyWith(
@@ -99,8 +99,8 @@ class EventScreen extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.ac_unit, size: 64, color: Colors.white70),
-                      SizedBox(height: MGSpacing.sm),
+                      const Icon(Icons.ac_unit, size: 64, color: Colors.white70),
+                      const SizedBox(height: MGSpacing.sm),
                       _buildEventTimer(event),
                     ],
                   ),
@@ -112,7 +112,7 @@ class EventScreen extends StatelessWidget {
           // Event Stats
           SliverToBoxAdapter(
             child: Container(
-              padding: EdgeInsets.all(MGSpacing.md),
+              padding: const EdgeInsets.all(MGSpacing.md),
               color: MGColors.surface,
               child: Column(
                 children: [
@@ -121,7 +121,7 @@ class EventScreen extends StatelessWidget {
                     style: MGTextStyles.body,
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: MGSpacing.md),
+                  const SizedBox(height: MGSpacing.md),
                   _buildStatsRow(),
                 ],
               ),
@@ -131,8 +131,8 @@ class EventScreen extends StatelessWidget {
           // Server Progress
           SliverToBoxAdapter(
             child: Container(
-              margin: EdgeInsets.all(MGSpacing.md),
-              padding: EdgeInsets.all(MGSpacing.md),
+              margin: const EdgeInsets.all(MGSpacing.md),
+              padding: const EdgeInsets.all(MGSpacing.md),
               decoration: BoxDecoration(
                 color: MGColors.surface,
                 borderRadius: BorderRadius.circular(12),
@@ -143,16 +143,16 @@ class EventScreen extends StatelessWidget {
                   Row(
                     children: [
                       Icon(Icons.public, color: themeColor),
-                      SizedBox(width: MGSpacing.sm),
+                      const SizedBox(width: MGSpacing.sm),
                       Text('Server Progress', style: MGTextStyles.headline),
                     ],
                   ),
-                  SizedBox(height: MGSpacing.sm),
+                  const SizedBox(height: MGSpacing.sm),
                   MGLinearProgress(
                     value: eventManager.serverProgress,
                     color: themeColor,
                   ),
-                  SizedBox(height: MGSpacing.xs),
+                  const SizedBox(height: MGSpacing.xs),
                   Text(
                     '${_formatNumber(eventManager.serverTotalDamage)} / ${_formatNumber(eventManager.serverTargetDamage)}',
                     style: MGTextStyles.caption.copyWith(
@@ -167,11 +167,11 @@ class EventScreen extends StatelessWidget {
           // Milestones Section
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: MGSpacing.md),
+              padding: const EdgeInsets.symmetric(horizontal: MGSpacing.md),
               child: Row(
                 children: [
                   Icon(Icons.flag, color: themeColor),
-                  SizedBox(width: MGSpacing.sm),
+                  const SizedBox(width: MGSpacing.sm),
                   Text('Milestones', style: MGTextStyles.headline),
                 ],
               ),
@@ -192,11 +192,11 @@ class EventScreen extends StatelessWidget {
           // Rewards Section
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(MGSpacing.md),
+              padding: const EdgeInsets.all(MGSpacing.md),
               child: Row(
                 children: [
                   Icon(Icons.card_giftcard, color: themeColor),
-                  SizedBox(width: MGSpacing.sm),
+                  const SizedBox(width: MGSpacing.sm),
                   Text('Rewards', style: MGTextStyles.headline),
                 ],
               ),
@@ -205,7 +205,7 @@ class EventScreen extends StatelessWidget {
 
           // Rewards Grid
           SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: MGSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: MGSpacing.md),
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
@@ -223,7 +223,7 @@ class EventScreen extends StatelessWidget {
             ),
           ),
 
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: SizedBox(height: MGSpacing.xl),
           ),
         ],
@@ -252,7 +252,7 @@ class EventScreen extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: MGSpacing.md,
         vertical: MGSpacing.xs,
       ),
@@ -264,7 +264,7 @@ class EventScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.timer, color: statusColor, size: 16),
-          SizedBox(width: MGSpacing.xs),
+          const SizedBox(width: MGSpacing.xs),
           Text(
             statusText,
             style: MGTextStyles.body.copyWith(color: statusColor),
@@ -310,7 +310,7 @@ class EventScreen extends StatelessWidget {
     return Column(
       children: [
         Icon(icon, color: color, size: 24),
-        SizedBox(height: MGSpacing.xs),
+        const SizedBox(height: MGSpacing.xs),
         Text(value, style: MGTextStyles.headline.copyWith(color: color)),
         Text(
           label,
@@ -329,11 +329,11 @@ class EventScreen extends StatelessWidget {
         !milestone.isClaimed;
 
     return Container(
-      margin: EdgeInsets.symmetric(
+      margin: const EdgeInsets.symmetric(
         horizontal: MGSpacing.md,
         vertical: MGSpacing.xs,
       ),
-      padding: EdgeInsets.all(MGSpacing.md),
+      padding: const EdgeInsets.all(MGSpacing.md),
       decoration: BoxDecoration(
         color: milestone.isClaimed
             ? themeColor.withOpacity(0.2)
@@ -368,7 +368,7 @@ class EventScreen extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: MGSpacing.md),
+          const SizedBox(width: MGSpacing.md),
 
           // Info
           Expanded(
@@ -391,8 +391,8 @@ class EventScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.monetization_on, color: MGColors.gold, size: 16),
-                  SizedBox(width: 4),
+                  const Icon(Icons.monetization_on, color: MGColors.gold, size: 16),
+                  const SizedBox(width: 4),
                   Text(
                     '${milestone.goldReward}',
                     style: MGTextStyles.body.copyWith(color: MGColors.gold),
@@ -403,7 +403,7 @@ class EventScreen extends StatelessWidget {
                 Icon(Icons.card_giftcard, color: themeColor, size: 16),
             ],
           ),
-          SizedBox(width: MGSpacing.sm),
+          const SizedBox(width: MGSpacing.sm),
 
           // Claim Button
           if (canClaim)
@@ -415,7 +415,7 @@ class EventScreen extends StatelessWidget {
           else if (milestone.isClaimed)
             Icon(Icons.check_circle, color: themeColor)
           else
-            Icon(Icons.lock, color: MGColors.textMediumEmphasis),
+            const Icon(Icons.lock, color: MGColors.textMediumEmphasis),
         ],
       ),
     );
@@ -425,7 +425,7 @@ class EventScreen extends StatelessWidget {
     final isUnlocked = eventManager.eventPoints >= reward.requiredPoints;
 
     return Container(
-      padding: EdgeInsets.all(MGSpacing.sm),
+      padding: const EdgeInsets.all(MGSpacing.sm),
       decoration: BoxDecoration(
         color: isUnlocked ? themeColor.withOpacity(0.2) : MGColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -441,7 +441,7 @@ class EventScreen extends StatelessWidget {
             color: isUnlocked ? themeColor : MGColors.textMediumEmphasis,
             size: 32,
           ),
-          SizedBox(height: MGSpacing.xs),
+          const SizedBox(height: MGSpacing.xs),
           Text(
             reward.name,
             style: MGTextStyles.caption,
@@ -449,11 +449,11 @@ class EventScreen extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: MGSpacing.xs),
+          const SizedBox(height: MGSpacing.xs),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.star, color: MGColors.gold, size: 12),
+              const Icon(Icons.star, color: MGColors.gold, size: 12),
               Text(
                 '${reward.requiredPoints}',
                 style: MGTextStyles.caption.copyWith(

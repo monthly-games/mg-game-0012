@@ -36,7 +36,7 @@ dependencies:
   get_it: ^9.2.0
   equatable: ^2.0.5
   mg_common_game:
-    path: ../../mg-common-game
+    path: ../libs/mg_common_game
   flame: ^1.13.0
   flame_audio: ^2.1.0
 

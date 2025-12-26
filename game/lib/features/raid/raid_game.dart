@@ -1,6 +1,8 @@
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
+import 'package:flame/input.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'raid_manager.dart';
 import 'components/boss_component.dart';
@@ -16,6 +18,9 @@ class RaidGame extends FlameGame with TapDetector {
 
   @override
   Future<void> onLoad() async {
+    // Audio
+    FlameAudio.bgm.play('bgm_raid.mp3');
+
     // Background
     add(
       SpriteComponent()
@@ -36,6 +41,23 @@ class RaidGame extends FlameGame with TapDetector {
       HeroComponent(raidManager: raidManager)
         ..position = Vector2(size.x / 2, size.y / 2 + 150)
         ..priority = 20,
+    );
+
+    // Skill Button (HUD)
+    final skillIcon = await loadSprite('icon_skill_slash.png');
+    add(
+      SpriteButtonComponent(
+        button: skillIcon,
+        onPressed: () {
+          if (raidManager.phase == RaidPhase.active) {
+            final hero = children.whereType<HeroComponent>().firstOrNull;
+            hero?.useSkill();
+          }
+        },
+        position: Vector2(size.x - 100, size.y - 100),
+        size: Vector2(80, 80),
+        priority: 100,
+      ),
     );
   }
 

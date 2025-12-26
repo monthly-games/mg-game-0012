@@ -96,7 +96,7 @@ class EventManager extends ChangeNotifier {
 
   // Server Progress (simulated for single player)
   int _serverTotalDamage = 0;
-  int _serverTargetDamage = 1000000;
+  final int _serverTargetDamage = 1000000;
 
   SeasonEvent? get currentEvent => _currentEvent;
   int get eventPoints => _eventPoints;

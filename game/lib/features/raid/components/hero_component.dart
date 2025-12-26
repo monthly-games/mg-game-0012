@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import '../raid_manager.dart';
 
@@ -36,13 +37,38 @@ class HeroComponent extends SpriteComponent with HasGameRef {
     _performAttack(true);
   }
 
-  void _performAttack(bool isSkill) {
+  Future<void> _performAttack(bool isSkill) async {
     final damage = isSkill ? _skillDamage : _autoDamage;
     raidManager.dealDamage(damage);
 
+    // Audio
+    if (isSkill) {
+      FlameAudio.play('sfx_skill.wav');
+    } else {
+      FlameAudio.play('sfx_attack.wav');
+    }
+
     // Visuals
     final targetPos = Vector2(position.x, position.y - 100);
-    // We could spawn a projectile or just a move effect
+
+    // Spawn VFX if skill
+    if (isSkill) {
+      gameRef.add(
+        SpriteComponent()
+          ..sprite = await gameRef.loadSprite('vfx_ice_shard.png')
+          ..position = targetPos
+          ..size = Vector2(64, 64)
+          ..anchor = Anchor.center
+          ..priority = 15
+          ..add(
+            SequenceEffect([
+              MoveEffect.by(Vector2(0, -50), EffectController(duration: 0.5)),
+              OpacityEffect.fadeOut(EffectController(duration: 0.2)),
+              RemoveEffect(),
+            ]),
+          ),
+      );
+    }
 
     add(
       MoveEffect.by(

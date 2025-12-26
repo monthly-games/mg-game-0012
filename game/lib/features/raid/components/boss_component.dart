@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import '../raid_manager.dart';
 
@@ -27,6 +28,7 @@ class BossComponent extends SpriteComponent with HasGameRef {
       // Took damage
       _lastHp = raidManager.bossHp;
       // Hit effect
+      FlameAudio.play('sfx_hit.wav');
       add(
         ColorEffect(
           Colors.red,
