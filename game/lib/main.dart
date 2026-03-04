@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mg_common_game/systems/gacha/gacha_pool.dart';
+import 'package:mg_common_game/systems/gacha/gacha_manager.dart';
+import 'package:mg_common_game/systems/battlepass/battlepass_config.dart';
+import 'package:mg_common_game/systems/battlepass/battlepass_manager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:mg_common_game/core/audio/audio_manager.dart';
@@ -23,6 +27,12 @@ import 'ui/main_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeSystems();
+  // BattlePass 시스템
+  GetIt.I.registerSingleton(BattlePassManager());
+  // Gacha 시스템
+  GetIt.I.registerSingleton(GachaManager());
+  _setupGacha();
+  _setupBattlePass();
   runApp(const RaidRPGApp());
 }
 
@@ -570,4 +580,69 @@ class _UpgradeCard extends StatelessWidget {
       ),
     );
   }
+}
+
+
+void _setupBattlePass() {
+  final bp = GetIt.I<BattlePassManager>();
+
+  final season = BPSeasonBuilder.create28DaySeason(
+    id: 'season_1',
+    nameKr: '시즌 1',
+    startDate: DateTime.now().subtract(const Duration(days: 1)),
+    maxLevel: 50,
+    expPerLevel: 1000,
+  );
+
+  bp.setSeason(season);
+  bp.setMissions(
+    daily: BPSeasonBuilder.createDefaultDailyMissions(),
+    weekly: BPSeasonBuilder.createDefaultWeeklyMissions(),
+  );
+}
+
+
+void _setupGacha() {
+  final gacha = GetIt.I<GachaManager>();
+
+  gacha.registerPool(GachaPool(
+    id: 'standard_pool',
+    nameKr: '스탠다드 뽑기',
+    items: [
+      // N (50%)
+      ...List.generate(20, (i) => GachaItem(
+        id: 'n_item_$i',
+        nameKr: '일반 아이템 $i',
+        rarity: GachaRarity.normal,
+      )),
+
+      // R (35%)
+      ...List.generate(10, (i) => GachaItem(
+        id: 'r_item_$i',
+        nameKr: '레어 아이템 $i',
+        rarity: GachaRarity.rare,
+      )),
+
+      // SR (12%)
+      ...List.generate(5, (i) => GachaItem(
+        id: 'sr_item_$i',
+        nameKr: '슈퍼레어 아이템 $i',
+        rarity: GachaRarity.superRare,
+      )),
+
+      // SSR (2.7%)
+      GachaItem(
+        id: 'ssr_item_1',
+        nameKr: '울트라레어 아이템 1',
+        rarity: GachaRarity.ultraRare,
+      ),
+
+      // UR (0.3%)
+      GachaItem(
+        id: 'ur_item_1',
+        nameKr: '레전더리 아이템 1',
+        rarity: GachaRarity.legendary,
+      ),
+    ],
+  ));
 }
