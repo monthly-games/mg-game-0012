@@ -1,16 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:mg_common_game/core/audio/audio_manager.dart';
 import 'package:mg_common_game/core/ui/theme/app_colors.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
+import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
+import 'package:mg_common_game/core/systems/save_manager_helper.dart';
+import 'game/raid_manager.dart';
+import 'game/party_manager.dart';
+import 'game/loot_manager.dart';
 import 'ui/main_screen.dart';
 
-import 'package:mg_common_game/core/systems/save_manager_helper.dart';
+// ============================================================
+// Raid RPG — MG-0012 (Africa)
+// Phase 1 Week 3: Mechanic Enhancement + UpgradeManager
+//
+// Core loop: Build Party → Raid Boss → Earn Loot → Upgrade → Repeat
+// Subsystems: Raid Config, Party Composition, Loot Tables
+// Upgrades: 8 total (Raid: 4, Party: 2, Loot: 2)
+// ============================================================
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  _setupDI();
-  await GetIt.I<AudioManager>().initialize();
+  await _initializeSystems();
+  runApp(const RaidRPGApp());
+}
+
+/// Initialize all DI-registered systems in correct dependency order.
+/// mg_common_game systems first, then game-specific managers.
+Future<void> _initializeSystems() async {
+  final di = GetIt.I;
+
+  // ── mg_common_game core systems ──────────────────────────
+  if (!di.isRegistered<AudioManager>()) {
+    di.registerSingleton<AudioManager>(AudioManager());
+  }
+  await di.get<AudioManager>().initialize();
+
+  if (!di.isRegistered<GoldManager>()) {
+    di.registerSingleton<GoldManager>(GoldManager());
+  }
 
   // Unified Persistence
   await SaveManagerHelper.setupSaveManager(
@@ -19,30 +48,526 @@ void main() async {
   );
   await SaveManagerHelper.legacyLoadAll();
 
-  runApp(const MyApp());
+  // ── Upgrade system ──────────────────────────────────────
+  if (!di.isRegistered<UpgradeManager>()) {
+    final upgrades = UpgradeManager();
+    di.registerSingleton<UpgradeManager>(upgrades);
+    _registerUpgrades(upgrades);
+    await upgrades.loadUpgrades();
+  }
+
+  // ── Game-specific managers ───────────────────────────────
+  final upgradeManager = di.get<UpgradeManager>();
+
+  if (!di.isRegistered<RaidConfigManager>()) {
+    di.registerSingleton<RaidConfigManager>(
+      RaidConfigManager(upgradeManager),
+    );
+  }
+
+  if (!di.isRegistered<PartyManager>()) {
+    di.registerSingleton<PartyManager>(
+      PartyManager(upgradeManager),
+    );
+  }
+
+  if (!di.isRegistered<LootManager>()) {
+    di.registerSingleton<LootManager>(
+      LootManager(upgradeManager),
+    );
+  }
+
+  // Apply upgrade effects to game systems
+  _applyUpgradeEffects(upgradeManager);
 }
 
-void _setupDI() {
-  if (!GetIt.I.isRegistered<AudioManager>()) {
-    GetIt.I.registerSingleton<AudioManager>(AudioManager());
+// ============================================================
+// Upgrade Registration — 8 raid RPG upgrades
+// Categories: Raid (4), Party (2), Loot (2)
+// ============================================================
+
+void _registerUpgrades(UpgradeManager manager) {
+  // ── Raid upgrades (4) ────────────────────────────────────
+
+  manager.registerUpgrade(Upgrade(
+    id: 'raid_difficulty',
+    name: 'Raid Mastery',
+    description: 'Increase raid difficulty for greater rewards. '
+        'Boss HP scales by 25% per level.',
+    maxLevel: 10,
+    baseCost: 200,
+    costMultiplier: 1.6,
+    valuePerLevel: 1.0,
+  ));
+
+  manager.registerUpgrade(Upgrade(
+    id: 'boss_rewards',
+    name: 'War Spoils',
+    description: 'Increase gold earned from boss defeats by 15% per level.',
+    maxLevel: 15,
+    baseCost: 150,
+    costMultiplier: 1.45,
+    valuePerLevel: 0.15,
+  ));
+
+  manager.registerUpgrade(Upgrade(
+    id: 'wave_bonus',
+    name: 'Endurance Training',
+    description: 'Unlock +1 bonus raid wave per level for extra rewards.',
+    maxLevel: 5,
+    baseCost: 500,
+    costMultiplier: 2.0,
+    valuePerLevel: 1.0,
+  ));
+
+  manager.registerUpgrade(Upgrade(
+    id: 'damage_multiplier',
+    name: 'Battle Fury',
+    description: 'Increase all hero damage by 12% per level.',
+    maxLevel: 20,
+    baseCost: 100,
+    costMultiplier: 1.35,
+    valuePerLevel: 0.12,
+  ));
+
+  // ── Party upgrades (2) ───────────────────────────────────
+
+  manager.registerUpgrade(Upgrade(
+    id: 'party_size',
+    name: 'War Band',
+    description: 'Expand maximum party size by 1 hero per level.',
+    maxLevel: 5,
+    baseCost: 800,
+    costMultiplier: 2.2,
+    valuePerLevel: 1.0,
+  ));
+
+  manager.registerUpgrade(Upgrade(
+    id: 'role_synergy',
+    name: 'Tactical Formation',
+    description:
+        'Boost party DPS by 8% per level when multiple roles are present.',
+    maxLevel: 10,
+    baseCost: 300,
+    costMultiplier: 1.5,
+    valuePerLevel: 0.08,
+  ));
+
+  // ── Loot upgrades (2) ────────────────────────────────────
+
+  manager.registerUpgrade(Upgrade(
+    id: 'drop_rate',
+    name: 'Treasure Sense',
+    description: 'Increase loot drop rate by 5% per level.',
+    maxLevel: 10,
+    baseCost: 250,
+    costMultiplier: 1.5,
+    valuePerLevel: 0.05,
+  ));
+
+  manager.registerUpgrade(Upgrade(
+    id: 'rarity_chance',
+    name: "Fortune's Favor",
+    description: 'Shift loot rarity toward rare+ items by 3% per level.',
+    maxLevel: 10,
+    baseCost: 400,
+    costMultiplier: 1.7,
+    valuePerLevel: 0.03,
+  ));
+}
+
+// ============================================================
+// Apply Upgrade Effects — push values into game managers
+// ============================================================
+
+/// Applies current upgrade levels to runtime managers.
+/// Called once at startup and again after each upgrade purchase.
+void _applyUpgradeEffects(UpgradeManager upgradeManager) {
+  final di = GetIt.I;
+
+  // Managers read from UpgradeManager getters directly,
+  // but we notify listeners to trigger UI rebuild.
+  if (di.isRegistered<RaidConfigManager>()) {
+    di.get<RaidConfigManager>().refresh();
   }
-  if (!GetIt.I.isRegistered<GoldManager>()) {
-    GetIt.I.registerSingleton<GoldManager>(GoldManager());
+
+  if (di.isRegistered<PartyManager>()) {
+    di.get<PartyManager>().refresh();
+  }
+
+  if (di.isRegistered<LootManager>()) {
+    di.get<LootManager>().refresh();
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// ============================================================
+// App Root — MultiProvider wraps all game state
+// ============================================================
+
+class RaidRPGApp extends StatelessWidget {
+  const RaidRPGApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Raid RPG',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: GetIt.I<UpgradeManager>()),
+        ChangeNotifierProvider.value(value: GetIt.I<RaidConfigManager>()),
+        ChangeNotifierProvider.value(value: GetIt.I<PartyManager>()),
+        ChangeNotifierProvider.value(value: GetIt.I<LootManager>()),
+      ],
+      child: MaterialApp(
+        title: 'Raid RPG',
+        debugShowCheckedModeBanner: false,
+        theme: _buildTheme(),
+        home: const MainScreen(),
       ),
-      home: const MainScreen(),
+    );
+  }
+
+  /// Africa-themed dark mode with warm gold accents.
+  ThemeData _buildTheme() {
+    return ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        brightness: Brightness.dark,
+      ),
+      useMaterial3: true,
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        elevation: 0,
+      ),
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// RaidUpgradePanel — Grouped upgrade display widget
+//
+// Shows all 8 upgrades organized by category (Raid / Party / Loot).
+// Intended to be shown via showModalBottomSheet or as a
+// dedicated screen accessible from the game HUD.
+// ============================================================
+
+/// Accent colors per upgrade category.
+class _UpgradeCategoryStyle {
+  _UpgradeCategoryStyle._();
+
+  // Combat warmth
+  static const Color raidColor = Color(0xFFFF6B35);
+  // Support cool
+  static const Color partyColor = Color(0xFF20B2AA);
+  // Reward gold
+  static const Color lootColor = Color(0xFFFFD700);
+}
+
+/// Shows the upgrade panel as a modal bottom sheet.
+///
+/// Usage from any widget with access to BuildContext:
+/// ```dart
+/// IconButton(
+///   onPressed: () => showRaidUpgradePanel(context),
+///   icon: const Icon(Icons.upgrade),
+/// );
+/// ```
+void showRaidUpgradePanel(BuildContext context) {
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => DraggableScrollableSheet(
+      initialChildSize: 0.7,
+      minChildSize: 0.4,
+      maxChildSize: 0.9,
+      builder: (context, scrollController) => Container(
+        decoration: const BoxDecoration(
+          color: AppColors.panel,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20),
+          ),
+        ),
+        child: RaidUpgradePanel(scrollController: scrollController),
+      ),
+    ),
+  );
+}
+
+/// Groups upgrades by category and displays current level + cost.
+class RaidUpgradePanel extends StatelessWidget {
+  final ScrollController? scrollController;
+
+  const RaidUpgradePanel({super.key, this.scrollController});
+
+  /// Upgrade IDs grouped by category.
+  static const _upgradeCategories = {
+    'Raid': [
+      'raid_difficulty',
+      'boss_rewards',
+      'wave_bonus',
+      'damage_multiplier',
+    ],
+    'Party': ['party_size', 'role_synergy'],
+    'Loot': ['drop_rate', 'rarity_chance'],
+  };
+
+  static const _categoryIcons = {
+    'Raid': Icons.shield,
+    'Party': Icons.group,
+    'Loot': Icons.diamond,
+  };
+
+  static const _categoryColors = {
+    'Raid': _UpgradeCategoryStyle.raidColor,
+    'Party': _UpgradeCategoryStyle.partyColor,
+    'Loot': _UpgradeCategoryStyle.lootColor,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<UpgradeManager>(
+      builder: (context, upgradeManager, _) {
+        return ListView(
+          controller: scrollController,
+          padding: const EdgeInsets.all(16),
+          children: [
+            // Drag handle
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.textDisabled,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+
+            // Header
+            const Center(
+              child: Text(
+                'UPGRADES',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textHighEmphasis,
+                  letterSpacing: 2.0,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Center(
+              child: Text(
+                'Spend gold to strengthen your raid',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textMediumEmphasis,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Category sections
+            ..._upgradeCategories.entries.map((category) {
+              return _buildCategorySection(
+                context,
+                upgradeManager,
+                category.key,
+                category.value,
+                _categoryIcons[category.key] ?? Icons.star,
+                _categoryColors[category.key] ?? Colors.white,
+              );
+            }),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildCategorySection(
+    BuildContext context,
+    UpgradeManager upgradeManager,
+    String category,
+    List<String> upgradeIds,
+    IconData icon,
+    Color color,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Category header
+        Row(
+          children: [
+            Icon(icon, color: color, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              category.toUpperCase(),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: color,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        // Upgrade cards
+        ...upgradeIds.map((id) {
+          final upgrade = upgradeManager.getUpgrade(id);
+          if (upgrade == null) return const SizedBox.shrink();
+          return _UpgradeCard(
+            upgrade: upgrade,
+            accentColor: color,
+            onPurchase: () {
+              final gold = GetIt.I<GoldManager>().currentGold;
+              if (upgradeManager.canAfford(id, gold)) {
+                upgradeManager.purchaseUpgrade(
+                  id,
+                  () => GetIt.I<GoldManager>().currentGold,
+                  (cost) => GetIt.I<GoldManager>().spendGold(cost),
+                );
+                _applyUpgradeEffects(upgradeManager);
+              }
+            },
+          );
+        }),
+        const SizedBox(height: 12),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// _UpgradeCard — Individual upgrade display tile
+// ============================================================
+
+class _UpgradeCard extends StatelessWidget {
+  final Upgrade upgrade;
+  final Color accentColor;
+  final VoidCallback onPurchase;
+
+  const _UpgradeCard({
+    required this.upgrade,
+    required this.accentColor,
+    required this.onPurchase,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isMaxed = upgrade.currentLevel >= upgrade.maxLevel;
+    final gold = GetIt.I<GoldManager>().currentGold;
+    final canAfford = !isMaxed && gold >= upgrade.costForNextLevel;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: accentColor.withValues(alpha: isMaxed ? 0.2 : 0.4),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Info section
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        upgrade.name,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textHighEmphasis,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: accentColor.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Lv.${upgrade.currentLevel}/${upgrade.maxLevel}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: accentColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  upgrade.description,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textMediumEmphasis,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+
+          // Purchase button
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 80,
+            child: ElevatedButton(
+              onPressed: canAfford ? onPurchase : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    canAfford ? accentColor : AppColors.textDisabled,
+                foregroundColor: AppColors.background,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                isMaxed ? 'MAX' : '${upgrade.costForNextLevel} G',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
