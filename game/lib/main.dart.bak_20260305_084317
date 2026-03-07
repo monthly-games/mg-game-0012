@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:mg_common_game/systems/systems.dart';
 import 'package:mg_common_game/systems/gacha/gacha_pool.dart';
 import 'package:mg_common_game/systems/gacha/gacha_manager.dart';
 import 'package:mg_common_game/systems/battlepass/battlepass_config.dart';
@@ -33,11 +31,6 @@ void main() async {
   GetIt.I.registerSingleton(BattlePassManager());
   // Gacha 시스템
   GetIt.I.registerSingleton(GachaManager());
-  // Collection 시스템
-  if (!GetIt.I.isRegistered<CollectionManager>()) {
-    GetIt.I.registerSingleton(CollectionManager());
-    _registerCollections();
-  }
   _setupGacha();
   _setupBattlePass();
   runApp(const RaidRPGApp());
@@ -652,59 +645,4 @@ void _setupGacha() {
       ),
     ],
   ));
-}
-
-void _registerCollections() {
-  final collection = GetIt.I<CollectionManager>();
-
-  // Characters 컬렉션
-  collection.registerCollection(const Collection(
-    id: 'characters',
-    name: '캐릭터',
-    description: '모든 캐릭터를 수집하세요',
-    items: [
-      CollectionItem(
-        id: 'char_warrior',
-        name: '전사',
-        description: '강인한 근접 전투 캐릭터',
-        rarity: CollectionRarity.common,
-      ),
-      CollectionItem(
-        id: 'char_mage',
-        name: '마법사',
-        description: '강력한 마법 공격 캐릭터',
-        rarity: CollectionRarity.rare,
-      ),
-      CollectionItem(
-        id: 'char_archer',
-        name: '궁수',
-        description: '원거리 정밀 공격 캐릭터',
-        rarity: CollectionRarity.rare,
-      ),
-      CollectionItem(
-        id: 'char_assassin',
-        name: '암살자',
-        description: '치명적인 은신 공격 캐릭터',
-        rarity: CollectionRarity.epic,
-      ),
-      CollectionItem(
-        id: 'char_healer',
-        name: '힐러',
-        description: '팀을 치유하는 지원 캐릭터',
-        rarity: CollectionRarity.legendary,
-      ),
-    ],
-    completionReward: CollectionReward(type: RewardType.gold, amount: 10000),
-    milestoneRewards: {
-      25: CollectionReward(type: RewardType.gold, amount: 1000),
-      50: CollectionReward(type: RewardType.gold, amount: 3000),
-      75: CollectionReward(type: RewardType.gold, amount: 5000),
-    },
-  ));
-
-  // 아이템 해제 콜백 (햅틱 피드백)
-  collection.onItemUnlocked = (collectionId, itemId) {
-    // SettingsManager가 등록되어 있으면 햅틱 피드백
-    debugPrint('Collection item unlocked: $collectionId / $itemId');
-  };
 }

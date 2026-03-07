@@ -165,14 +165,14 @@ class RaidManager extends ChangeNotifier {
 
   void upgradeHero(RaidHero hero) {
     if (!hero.isUnlocked) {
-      if (GetIt.I<GoldManager>().spendGold(hero.unlockCost)) {
+      if (GetIt.I<GoldManager>().trySpendGold(hero.unlockCost)) {
         hero.isUnlocked = true;
         hero.level = 1;
         _saveState();
         notifyListeners();
       }
     } else {
-      if (GetIt.I<GoldManager>().spendGold(hero.upgradeCost)) {
+      if (GetIt.I<GoldManager>().trySpendGold(hero.upgradeCost)) {
         hero.level++;
         _saveState();
         notifyListeners();

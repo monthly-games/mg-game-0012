@@ -90,7 +90,7 @@ class EventScreen extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      themeColor.withOpacity(0.8),
+                      themeColor.withValues(alpha: 0.8),
                       themeColor,
                     ],
                   ),
@@ -336,7 +336,7 @@ class EventScreen extends StatelessWidget {
       padding: const EdgeInsets.all(MGSpacing.md),
       decoration: BoxDecoration(
         color: milestone.isClaimed
-            ? themeColor.withOpacity(0.2)
+            ? themeColor.withValues(alpha: 0.2)
             : MGColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
@@ -427,7 +427,7 @@ class EventScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(MGSpacing.sm),
       decoration: BoxDecoration(
-        color: isUnlocked ? themeColor.withOpacity(0.2) : MGColors.surface,
+        color: isUnlocked ? themeColor.withValues(alpha: 0.2) : MGColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isUnlocked ? themeColor : MGColors.outline,

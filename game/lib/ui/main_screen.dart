@@ -10,7 +10,9 @@ import '../features/raid/raid_game.dart';
 import '../features/raid/raid_manager.dart';
 import '../features/event/event_manager.dart';
 import 'hud/mg_raid_hud.dart';
+import 'screens/battlepass_screen.dart';
 import 'screens/event_screen.dart';
+import 'screens/gacha_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -20,6 +22,55 @@ class MainScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => RaidManager(),
       child: const MainScreenContent(),
+    );
+  }
+}
+
+// ============================================================
+// _QuickNavButton — Compact navigation button for quick access
+// ============================================================
+
+class _QuickNavButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickNavButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color.withValues(alpha: 0.5)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: AppTextStyles.caption.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -34,6 +85,8 @@ class MainScreenContent extends StatefulWidget {
 class _MainScreenContentState extends State<MainScreenContent> {
   late final RaidGame _game;
   bool _showEventScreen = false;
+  bool _showBattlePassScreen = false;
+  bool _showGachaScreen = false;
 
   @override
   void initState() {
@@ -52,6 +105,20 @@ class _MainScreenContentState extends State<MainScreenContent> {
       return EventScreen(
         eventManager: raidManager.eventManager!,
         onBack: () => setState(() => _showEventScreen = false),
+      );
+    }
+
+    // Show BattlePass Screen if toggled
+    if (_showBattlePassScreen) {
+      return BattlePassScreen(
+        onBack: () => setState(() => _showBattlePassScreen = false),
+      );
+    }
+
+    // Show Gacha Screen if toggled
+    if (_showGachaScreen) {
+      return GachaScreen(
+        onBack: () => setState(() => _showGachaScreen = false),
       );
     }
 
@@ -140,11 +207,36 @@ class _MainScreenContentState extends State<MainScreenContent> {
 
                 const Spacer(),
 
+                // Quick Access — BattlePass & Gacha
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    children: [
+                      _QuickNavButton(
+                        icon: Icons.card_membership,
+                        label: 'Battle Pass',
+                        color: const Color(0xFFFFD700),
+                        onTap: () =>
+                            setState(() => _showBattlePassScreen = true),
+                      ),
+                      const SizedBox(width: 8),
+                      _QuickNavButton(
+                        icon: Icons.auto_awesome,
+                        label: 'Summon',
+                        color: const Color(0xFFFF6B35),
+                        onTap: () =>
+                            setState(() => _showGachaScreen = true),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+
                 // Bottom Party Status (Placeholder)
                 // Upgrade Panel
                 Container(
                   height: 160,
-                  color: AppColors.panel.withOpacity(0.9),
+                  color: AppColors.panel.withValues(alpha: 0.9),
                   padding: const EdgeInsets.all(8),
                   child: Consumer<RaidManager>(
                     builder: (context, rm, _) {
@@ -169,7 +261,7 @@ class _MainScreenContentState extends State<MainScreenContent> {
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: isUnlocked
-                                    ? hero.color.withOpacity(0.5)
+                                    ? hero.color.withValues(alpha: 0.5)
                                     : AppColors.textDisabled,
                               ),
                             ),
