@@ -3,6 +3,7 @@ import 'package:flame/effects.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import '../raid_manager.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class BossComponent extends SpriteComponent with HasGameRef {
   final RaidManager raidManager;
@@ -31,7 +32,7 @@ class BossComponent extends SpriteComponent with HasGameRef {
       FlameAudio.play('sfx_hit.wav');
       add(
         ColorEffect(
-          Colors.red,
+          MGColors.error,
           EffectController(duration: 0.1, alternate: true, repeatCount: 1),
           opacityTo: 0.7,
         ),

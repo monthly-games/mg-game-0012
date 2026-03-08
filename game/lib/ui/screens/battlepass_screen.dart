@@ -29,7 +29,7 @@ class _GameConfig {
 
   static const String gameId = 'mg-0012';
   // gameTitle removed — unused (was 'Raid RPG')
-  static const Color accentColor = Color(0xFFFFD700); // Africa Gold
+  static const Color accentColor = MGColors.gold; // Africa Gold
   static const Color premiumColor = Color(0xFFFF6B35); // Africa Orange
 }
 
@@ -118,7 +118,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
       SnackBar(
         content: Text(
           'Claimed ${rewards.length} reward(s)!',
-          style: MGTextStyles.body.copyWith(color: Colors.white),
+          style: MGTextStyles.body.copyWith(color: MGColors.textHighEmphasis),
         ),
         backgroundColor: _GameConfig.accentColor,
         duration: const Duration(seconds: 2),
@@ -236,7 +236,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
       leading: MGIconButton(
         icon: Icons.arrow_back,
         onPressed: widget.onBack,
-        color: Colors.white,
+        color: MGColors.textHighEmphasis,
       ),
       actions: [
         if (_bp.isPremium)
@@ -270,7 +270,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           season.nameKr,
-          style: MGTextStyles.h2.copyWith(color: Colors.white),
+          style: MGTextStyles.h2.copyWith(color: MGColors.textHighEmphasis),
         ),
         background: Container(
           decoration: BoxDecoration(

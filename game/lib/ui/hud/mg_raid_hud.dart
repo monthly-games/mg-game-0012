@@ -73,7 +73,7 @@ class MGRaidHud extends StatelessWidget {
                       onPressed: onPause,
                       size: 44,
                       backgroundColor: Colors.black54,
-                      color: Colors.white,
+                      color: MGColors.textHighEmphasis,
                     ),
                   ],
                 ),
@@ -137,7 +137,7 @@ class MGRaidHud extends StatelessWidget {
             const Center(
               child: Icon(
                 Icons.event,
-                color: Colors.white,
+                color: MGColors.textHighEmphasis,
                 size: 24,
               ),
             ),
@@ -149,9 +149,9 @@ class MGRaidHud extends StatelessWidget {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: MGColors.error,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1),
+                    border: Border.all(color: MGColors.textHighEmphasis, width: 1),
                   ),
                 ),
               ),
@@ -168,7 +168,7 @@ class MGRaidHud extends StatelessWidget {
         color: Colors.black54,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.red.withValues(alpha: 0.5),
+          color: MGColors.error.withValues(alpha: 0.5),
         ),
       ),
       child: Row(
@@ -176,14 +176,14 @@ class MGRaidHud extends StatelessWidget {
         children: [
           const Icon(
             Icons.flash_on,
-            color: Colors.red,
+            color: MGColors.error,
             size: 20,
           ),
           MGSpacing.hXs,
           Text(
             '${_formatNumber(totalDps)} DPS',
             style: MGTextStyles.hud.copyWith(
-              color: Colors.white,
+              color: MGColors.textHighEmphasis,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -202,7 +202,7 @@ class MGRaidHud extends StatelessWidget {
           value: ratio,
           height: 14,
           valueColor: isDanger ? MGColors.error : Colors.cyan,
-          backgroundColor: Colors.grey.withValues(alpha: 0.3),
+          backgroundColor: MGColors.common.withValues(alpha: 0.3),
           borderRadius: 7,
         ),
         MGSpacing.vXs,
@@ -210,7 +210,7 @@ class MGRaidHud extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             color: isDanger
-                ? Colors.red.withValues(alpha: 0.8)
+                ? MGColors.error.withValues(alpha: 0.8)
                 : Colors.black54,
             borderRadius: BorderRadius.circular(12),
           ),
@@ -219,14 +219,14 @@ class MGRaidHud extends StatelessWidget {
             children: [
               Icon(
                 Icons.timer,
-                color: isDanger ? Colors.white : Colors.cyan,
+                color: isDanger ? MGColors.textHighEmphasis : Colors.cyan,
                 size: 16,
               ),
               MGSpacing.hXs,
               Text(
                 '${currentTime.toStringAsFixed(1)}s',
                 style: MGTextStyles.hud.copyWith(
-                  color: Colors.white,
+                  color: MGColors.textHighEmphasis,
                   fontWeight: FontWeight.bold,
                   fontSize: isDanger ? 20 : 16,
                 ),
@@ -247,7 +247,7 @@ class MGRaidHud extends StatelessWidget {
         color: Colors.black54,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.red.withValues(alpha: 0.5),
+          color: MGColors.error.withValues(alpha: 0.5),
         ),
       ),
       child: Column(
@@ -258,7 +258,7 @@ class MGRaidHud extends StatelessWidget {
             children: [
               const Icon(
                 Icons.shield,
-                color: Colors.red,
+                color: MGColors.error,
                 size: 20,
               ),
               MGSpacing.hXs,
@@ -266,7 +266,7 @@ class MGRaidHud extends StatelessWidget {
                 child: Text(
                   bossName ?? 'BOSS',
                   style: MGTextStyles.hud.copyWith(
-                    color: Colors.white,
+                    color: MGColors.textHighEmphasis,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -284,7 +284,7 @@ class MGRaidHud extends StatelessWidget {
             value: percentage,
             height: 16,
             valueColor: _getBossHpColor(percentage),
-            backgroundColor: Colors.grey.withValues(alpha: 0.3),
+            backgroundColor: MGColors.common.withValues(alpha: 0.3),
             borderRadius: 8,
           ),
         ],
@@ -294,9 +294,9 @@ class MGRaidHud extends StatelessWidget {
 
   Color _getBossHpColor(double percentage) {
     if (percentage <= 0.25) {
-      return Colors.red;
+      return MGColors.error;
     } else if (percentage <= 0.5) {
-      return Colors.orange;
+      return MGColors.warning;
     } else {
       return Colors.redAccent;
     }

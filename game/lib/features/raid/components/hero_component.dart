@@ -3,6 +3,7 @@ import 'package:flame/effects.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import '../raid_manager.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class HeroComponent extends SpriteComponent with HasGameRef {
   final RaidManager raidManager;
@@ -81,7 +82,7 @@ class HeroComponent extends SpriteComponent with HasGameRef {
     if (isSkill) {
       add(
         ColorEffect(
-          Colors.blue,
+          MGColors.info,
           EffectController(duration: 0.2, alternate: true),
           opacityTo: 0.8,
         ),

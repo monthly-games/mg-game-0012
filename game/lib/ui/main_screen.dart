@@ -13,6 +13,7 @@ import 'hud/mg_raid_hud.dart';
 import 'screens/battlepass_screen.dart';
 import 'screens/event_screen.dart';
 import 'screens/gacha_screen.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -215,7 +216,7 @@ class _MainScreenContentState extends State<MainScreenContent> {
                       _QuickNavButton(
                         icon: Icons.card_membership,
                         label: 'Battle Pass',
-                        color: const Color(0xFFFFD700),
+                        color: MGColors.gold,
                         onTap: () =>
                             setState(() => _showBattlePassScreen = true),
                       ),

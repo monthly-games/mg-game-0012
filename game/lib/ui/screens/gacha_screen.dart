@@ -31,7 +31,7 @@ class _GameConfig {
   static const String gameId = 'mg-0012';
   static const int singlePullCost = 300;
   static const int multiPullCost = 2700; // 10x with discount
-  static const Color accentColor = Color(0xFFFFD700); // Africa Gold
+  static const Color accentColor = MGColors.gold; // Africa Gold
   static const Color premiumColor = Color(0xFFFF6B35); // Africa Orange
 }
 
@@ -240,12 +240,12 @@ class _GachaScreenState extends State<GachaScreen> {
       leading: MGIconButton(
         icon: Icons.arrow_back,
         onPressed: widget.onBack,
-        color: Colors.white,
+        color: MGColors.textHighEmphasis,
       ),
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           pool.nameKr,
-          style: MGTextStyles.h2.copyWith(color: Colors.white),
+          style: MGTextStyles.h2.copyWith(color: MGColors.textHighEmphasis),
         ),
         background: Container(
           decoration: BoxDecoration(
@@ -711,7 +711,7 @@ class _GachaScreenState extends State<GachaScreen> {
                 style: MGTextStyles.h2.copyWith(
                   color: hasHighRarity
                       ? _GameConfig.accentColor
-                      : Colors.white,
+                      : MGColors.textHighEmphasis,
                   fontSize: 24,
                   letterSpacing: 2,
                 ),

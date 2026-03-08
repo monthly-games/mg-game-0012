@@ -16,6 +16,7 @@ import 'game/raid_manager.dart';
 import 'game/party_manager.dart';
 import 'game/loot_manager.dart';
 import 'ui/main_screen.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 // ============================================================
 // Raid RPG — MG-0012 (Africa)
@@ -288,7 +289,7 @@ class _UpgradeCategoryStyle {
   // Support cool
   static const Color partyColor = Color(0xFF20B2AA);
   // Reward gold
-  static const Color lootColor = Color(0xFFFFD700);
+  static const Color lootColor = MGColors.gold;
 }
 
 /// Shows the upgrade panel as a modal bottom sheet.
@@ -405,7 +406,7 @@ class RaidUpgradePanel extends StatelessWidget {
                 category.key,
                 category.value,
                 _categoryIcons[category.key] ?? Icons.star,
-                _categoryColors[category.key] ?? Colors.white,
+                _categoryColors[category.key] ?? MGColors.textHighEmphasis,
               );
             }),
           ],

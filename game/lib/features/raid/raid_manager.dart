@@ -4,6 +4,7 @@ import 'package:mg_common_game/core/economy/gold_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../event/event_manager.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
 enum RaidPhase { active, victory, defeat }
 
@@ -27,7 +28,7 @@ class RaidHero {
     this.baseDps = 10.0,
     this.unlockCost = 100,
     this.baseCost = 50.0,
-    this.color = Colors.grey,
+    this.color = MGColors.common,
   });
 
   double get dps => baseDps * level;

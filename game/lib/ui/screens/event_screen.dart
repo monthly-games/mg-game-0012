@@ -77,12 +77,12 @@ class EventScreen extends StatelessWidget {
             leading: MGIconButton(
               icon: Icons.arrow_back,
               onPressed: onBack,
-              color: Colors.white,
+              color: MGColors.textHighEmphasis,
             ),
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 event.name,
-                style: MGTextStyles.headline.copyWith(color: Colors.white),
+                style: MGTextStyles.headline.copyWith(color: MGColors.textHighEmphasis),
               ),
               background: Container(
                 decoration: BoxDecoration(
@@ -239,7 +239,7 @@ class EventScreen extends StatelessWidget {
     switch (phase) {
       case EventPhase.upcoming:
         statusText = 'Starts Soon';
-        statusColor = Colors.orange;
+        statusColor = MGColors.warning;
         break;
       case EventPhase.active:
         statusText = '${event.formattedTimeRemaining} remaining';
@@ -247,7 +247,7 @@ class EventScreen extends StatelessWidget {
         break;
       case EventPhase.ended:
         statusText = 'Event Ended';
-        statusColor = Colors.red;
+        statusColor = MGColors.error;
         break;
     }
 
