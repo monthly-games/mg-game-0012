@@ -13,7 +13,6 @@ class MGRaidHud extends StatelessWidget {
   final String? bossName;
   final VoidCallback? onPause;
   final VoidCallback? onEvent;
-  final VoidCallback? onDailyHub;
   final bool hasActiveEvent;
 
   const MGRaidHud({
@@ -28,7 +27,6 @@ class MGRaidHud extends StatelessWidget {
     this.onPause,
     this.onEvent,
     this.hasActiveEvent = false,
-    this.onDailyHub,
   });
 
   @override
@@ -70,16 +68,6 @@ class MGRaidHud extends StatelessWidget {
                       ),
 
                     // 일시정지 버튼
-        if (onDailyHub != null)
-          MGIconButton(
-            icon: Icons.calendar_today,
-            onPressed: onDailyHub,
-            size: 44,
-            backgroundColor: MGColors.info.withValues(alpha: 0.8),
-            color: MGColors.textHighEmphasis,
-            tooltip: 'Daily Hub',
-          ),
-        MGSpacing.hXs,
                     MGIconButton(
                       icon: Icons.pause,
                       onPressed: onPause,

@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mg_common_game/systems/quests/daily_quest.dart';
-import 'package:mg_common_game/core/ui/screens/daily_hub_screen.dart';
-import 'package:mg_common_game/systems/retention/daily_challenge_manager.dart';
-import 'package:mg_common_game/systems/retention/streak_manager.dart';
-import 'package:mg_common_game/systems/retention/login_rewards_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mg_common_game/systems/systems.dart';
 import 'package:mg_common_game/systems/gacha/gacha_pool.dart';
@@ -98,20 +93,6 @@ Future<void> _initializeSystems() async {
     di.registerSingleton<LootManager>(
       LootManager(upgradeManager),
     );
-  // ── DailyQuest for DailyHub ───────────────────────────────
-  if (!GetIt.I.isRegistered<DailyQuestManager>()) {
-    GetIt.I.registerSingleton(DailyQuestManager());
-  // ── Retention Systems for DailyHub ────────────────────────
-  if (!GetIt.I.isRegistered<LoginRewardsManager>()) {
-    GetIt.I.registerSingleton(LoginRewardsManager());
-  }
-  if (!GetIt.I.isRegistered<StreakManager>()) {
-    GetIt.I.registerSingleton(StreakManager());
-  }
-  if (!GetIt.I.isRegistered<DailyChallengeManager>()) {
-    GetIt.I.registerSingleton(DailyChallengeManager());
-  }
-  }
   }
 
   // Apply upgrade effects to game systems
@@ -257,16 +238,6 @@ class RaidRPGApp extends StatelessWidget {
         title: 'Raid RPG',
         debugShowCheckedModeBanner: false,
         theme: _buildTheme(),
-        routes: {
-        '/daily-hub': (context) => DailyHubScreen(
-          questManager: GetIt.I<DailyQuestManager>(),
-          loginRewardsManager: GetIt.I<LoginRewardsManager>(),
-          streakManager: GetIt.I<StreakManager>(),
-          challengeManager: GetIt.I<DailyChallengeManager>(),
-          accentColor: MGColors.primaryAction,
-          onClose: () => Navigator.pop(context),
-        ),
-        },
         home: const MainScreen(),
       ),
     );
