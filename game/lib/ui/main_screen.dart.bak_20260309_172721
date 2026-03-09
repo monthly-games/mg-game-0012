@@ -196,7 +196,6 @@ class _MainScreenContentState extends State<MainScreenContent> {
                   _game.pauseEngine();
                   _game.overlays.add('PauseGame');
                 },
-                onDailyHub: () => Navigator.of(context).pushNamed('/daily-hub'),
               );
             },
           ),
