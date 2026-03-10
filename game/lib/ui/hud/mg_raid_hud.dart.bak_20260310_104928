@@ -14,9 +14,6 @@ class MGRaidHud extends StatelessWidget {
   final VoidCallback? onPause;
   final VoidCallback? onEvent;
   final VoidCallback? onDailyHub;
-  final VoidCallback? onGuildWar;
-  final VoidCallback? onTournament;
-  final VoidCallback? onSeasonalEvent;
   final bool hasActiveEvent;
 
   const MGRaidHud({
@@ -32,9 +29,6 @@ class MGRaidHud extends StatelessWidget {
     this.onEvent,
     this.hasActiveEvent = false,
     this.onDailyHub,
-    this.onGuildWar,
-    this.onTournament,
-    this.onSeasonalEvent,
   });
 
   @override

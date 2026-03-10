@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mg_common_game/core/ui/screens/seasonal_event_screen.dart';
-import 'package:mg_common_game/core/ui/screens/tournament_screen.dart';
-import 'package:mg_common_game/core/ui/screens/guild_war_screen.dart';
 import 'package:mg_common_game/systems/events/seasonal_content_manager.dart';
 import 'package:mg_common_game/systems/competitive/tournament_manager.dart';
 import 'package:mg_common_game/systems/social/guild_war_manager.dart';
@@ -287,21 +284,6 @@ class RaidRPGApp extends StatelessWidget {
         '/collection': (context) => CollectionScreen(
           collectionManager: GetIt.I<CollectionManager>(),
         ),
-          '/guild-war': (context) => GuildWarScreen(
-            guildWarManager: GetIt.I<GuildWarManager>(),
-            accentColor: MGColors.primaryAction,
-            onClose: () => Navigator.pop(context),
-            ),
-          '/tournament': (context) => TournamentScreen(
-            tournamentManager: GetIt.I<TournamentManager>(),
-            accentColor: MGColors.primaryAction,
-            onClose: () => Navigator.pop(context),
-            ),
-          '/seasonal-event': (context) => SeasonalEventScreen(
-            seasonalContentManager: GetIt.I<SeasonalContentManager>(),
-            accentColor: MGColors.primaryAction,
-            onClose: () => Navigator.pop(context),
-            ),
 },
         home: const MainScreen(),
       ),
