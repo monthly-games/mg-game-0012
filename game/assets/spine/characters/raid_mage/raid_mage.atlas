@@ -1,0 +1,169 @@
+arm_L.png
+size: 239,73
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_L
+  rotate: false
+  xy: 0, 0
+  size: 239, 73
+  orig: 239, 73
+  offset: 0, 0
+  index: -1
+
+arm_L_lower.png
+size: 239,73
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_L_lower
+  rotate: false
+  xy: 0, 0
+  size: 239, 73
+  orig: 239, 73
+  offset: 0, 0
+  index: -1
+
+arm_L_upper.png
+size: 239,73
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_L_upper
+  rotate: false
+  xy: 0, 0
+  size: 239, 73
+  orig: 239, 73
+  offset: 0, 0
+  index: -1
+
+arm_R.png
+size: 278,89
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_R
+  rotate: false
+  xy: 0, 0
+  size: 278, 89
+  orig: 278, 89
+  offset: 0, 0
+  index: -1
+
+arm_R_lower.png
+size: 278,89
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_R_lower
+  rotate: false
+  xy: 0, 0
+  size: 278, 89
+  orig: 278, 89
+  offset: 0, 0
+  index: -1
+
+arm_R_upper.png
+size: 278,89
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_R_upper
+  rotate: false
+  xy: 0, 0
+  size: 278, 89
+  orig: 278, 89
+  offset: 0, 0
+  index: -1
+
+body.png
+size: 135,116
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 0, 0
+  size: 135, 116
+  orig: 135, 116
+  offset: 0, 0
+  index: -1
+
+hips.png
+size: 679,894
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hips
+  rotate: false
+  xy: 0, 0
+  size: 679, 894
+  orig: 679, 894
+  offset: 0, 0
+  index: -1
+
+leg_L.png
+size: 106,287
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+leg_L
+  rotate: false
+  xy: 0, 0
+  size: 106, 287
+  orig: 106, 287
+  offset: 0, 0
+  index: -1
+
+leg_L_lower.png
+size: 106,287
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+leg_L_lower
+  rotate: false
+  xy: 0, 0
+  size: 106, 287
+  orig: 106, 287
+  offset: 0, 0
+  index: -1
+
+leg_L_upper.png
+size: 106,287
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+leg_L_upper
+  rotate: false
+  xy: 0, 0
+  size: 106, 287
+  orig: 106, 287
+  offset: 0, 0
+  index: -1
+
+leg_R.png
+size: 73,131
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+leg_R
+  rotate: false
+  xy: 0, 0
+  size: 73, 131
+  orig: 73, 131
+  offset: 0, 0
+  index: -1
+
+weapon.png
+size: 71,132
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+weapon
+  rotate: false
+  xy: 0, 0
+  size: 71, 132
+  orig: 71, 132
+  offset: 0, 0
+  index: -1
+

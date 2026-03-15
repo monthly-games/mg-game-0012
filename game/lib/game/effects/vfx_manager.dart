@@ -6,28 +6,28 @@ import 'package:flutter/material.dart';
 
 /// VFX Manager for Year-End Raid Event RPG (MG-0012)
 /// Raid JRPG + Event 게임 전용 이펙트 관리자
-class VfxManager extends Component with HasGameRef {
+class VfxManager extends Component with HasGameReference {
   VfxManager();
   final Random _random = Random();
 
   // Raid/Combat Effects
   void showDamageNumber(Vector2 position, int damage, {bool isCritical = false, bool isBoss = false}) {
-    gameRef.add(_DamageNumber(position: position, damage: damage, isCritical: isCritical, isBoss: isBoss));
+    game.add(_DamageNumber(position: position, damage: damage, isCritical: isCritical, isBoss: isBoss));
   }
 
   void showHit(Vector2 position, {Color color = Colors.white, bool isCritical = false}) {
-    gameRef.add(_createHitEffect(position: position, color: color, isCritical: isCritical));
+    game.add(_createHitEffect(position: position, color: color, isCritical: isCritical));
   }
 
   void showBossPhaseTransition(Vector2 position) {
     for (int i = 0; i < 3; i++) {
       Future.delayed(Duration(milliseconds: i * 200), () {
         if (!isMounted) return;
-        gameRef.add(_createExplosionEffect(position: position + Vector2((_random.nextDouble() - 0.5) * 80, (_random.nextDouble() - 0.5) * 60), color: i == 1 ? Colors.purple : Colors.red, count: 30, radius: 70));
+        game.add(_createExplosionEffect(position: position + Vector2((_random.nextDouble() - 0.5) * 80, (_random.nextDouble() - 0.5) * 60), color: i == 1 ? Colors.purple : Colors.red, count: 30, radius: 70));
       });
     }
     _triggerScreenShake(intensity: 10, duration: 0.8);
-    gameRef.add(_PhaseText(position: position));
+    game.add(_PhaseText(position: position));
   }
 
   void showBossDefeat(Vector2 position) {
@@ -35,42 +35,42 @@ class VfxManager extends Component with HasGameRef {
       Future.delayed(Duration(milliseconds: i * 150), () {
         if (!isMounted) return;
         final offset = Vector2((_random.nextDouble() - 0.5) * 100, (_random.nextDouble() - 0.5) * 80);
-        gameRef.add(_createExplosionEffect(position: position + offset, color: [Colors.orange, Colors.red, Colors.yellow][i % 3], count: 40, radius: 80));
+        game.add(_createExplosionEffect(position: position + offset, color: [Colors.orange, Colors.red, Colors.yellow][i % 3], count: 40, radius: 80));
       });
     }
     _triggerScreenShake(intensity: 15, duration: 1.2);
-    gameRef.add(_VictoryText(position: position));
+    game.add(_VictoryText(position: position));
   }
 
   void showSkillActivation(Vector2 position, Color skillColor) {
-    gameRef.add(_createConvergeEffect(position: position, color: skillColor));
-    gameRef.add(_createGroundCircle(position: position, color: skillColor));
+    game.add(_createConvergeEffect(position: position, color: skillColor));
+    game.add(_createGroundCircle(position: position, color: skillColor));
   }
 
   void showCoopAttack(Vector2 position) {
-    gameRef.add(_createExplosionEffect(position: position, color: Colors.cyan, count: 35, radius: 80));
-    gameRef.add(_createSparkleEffect(position: position, color: Colors.white, count: 20));
-    gameRef.add(_CoopText(position: position));
+    game.add(_createExplosionEffect(position: position, color: Colors.cyan, count: 35, radius: 80));
+    game.add(_createSparkleEffect(position: position, color: Colors.white, count: 20));
+    game.add(_CoopText(position: position));
   }
 
   void showLootDrop(Vector2 position, {bool isRare = false}) {
     final color = isRare ? Colors.purple : Colors.blue;
-    gameRef.add(_createSparkleEffect(position: position, color: color, count: isRare ? 18 : 10));
-    if (isRare) gameRef.add(_createGroundCircle(position: position, color: Colors.purple));
+    game.add(_createSparkleEffect(position: position, color: color, count: isRare ? 18 : 10));
+    if (isRare) game.add(_createGroundCircle(position: position, color: Colors.purple));
   }
 
   void showEventBanner(Vector2 position) {
-    gameRef.add(_createSparkleEffect(position: position, color: Colors.amber, count: 25));
-    gameRef.add(_createRisingEffect(position: position, color: Colors.yellow, count: 15, speed: 80));
+    game.add(_createSparkleEffect(position: position, color: Colors.amber, count: 25));
+    game.add(_createRisingEffect(position: position, color: Colors.yellow, count: 15, speed: 80));
   }
 
   void showNumberPopup(Vector2 position, String text, {Color color = Colors.white}) {
-    gameRef.add(_NumberPopup(position: position, text: text, color: color));
+    game.add(_NumberPopup(position: position, text: text, color: color));
   }
 
   void _triggerScreenShake({double intensity = 5, double duration = 0.3}) {
-    if (gameRef.camera.viewfinder.children.isNotEmpty) {
-      gameRef.camera.viewfinder.add(MoveByEffect(Vector2(intensity, 0), EffectController(duration: duration / 10, repeatCount: (duration * 10).toInt(), alternate: true)));
+    if (game.camera.viewfinder.children.isNotEmpty) {
+      game.camera.viewfinder.add(MoveByEffect(Vector2(intensity, 0), EffectController(duration: duration / 10, repeatCount: (duration * 10).toInt(), alternate: true)));
     }
   }
 
@@ -118,7 +118,11 @@ class VfxManager extends Component with HasGameRef {
         final opacity = (1.0 - particle.progress).clamp(0.0, 1.0);
         final size = 3 * (1.0 - particle.progress * 0.5);
         final path = Path();
-        for (int j = 0; j < 4; j++) { final a = (j * pi / 2); if (j == 0) path.moveTo(cos(a) * size, sin(a) * size); else path.lineTo(cos(a) * size, sin(a) * size); }
+        for (int j = 0; j < 4; j++) { final a = (j * pi / 2); if (j == 0) {
+          path.moveTo(cos(a) * size, sin(a) * size);
+        } else {
+          path.lineTo(cos(a) * size, sin(a) * size);
+        } }
         path.close();
         canvas.drawPath(path, Paint()..color = color.withValues(alpha: opacity));
       }));

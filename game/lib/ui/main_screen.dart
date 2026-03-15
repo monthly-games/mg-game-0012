@@ -190,7 +190,7 @@ class _MainScreenContentState extends State<MainScreenContent> {
                 bossHp: rm.bossHp.toInt(),
                 bossMaxHp: rm.maxBossHp.toInt(),
                 bossName: 'ICE GOLEM',
-                hasActiveEvent: hasActiveEvent ?? false,
+                hasActiveEvent: hasActiveEvent,
                 onEvent: () => setState(() => _showEventScreen = true),
                 onPause: () {
                   _game.pauseEngine();
@@ -198,16 +198,13 @@ class _MainScreenContentState extends State<MainScreenContent> {
                 },
                 onDailyHub: () => Navigator.of(context).pushNamed('/daily-hub'),
                 onGuildWar: () {
-                  game.pauseEngine();
-                  Navigator.of(context).pushNamed('/guild-war').then((_) => game.resumeEngine());
+Navigator.of(context).pushNamed('/guild-war');
                 },
                 onTournament: () {
-                  game.pauseEngine();
-                  Navigator.of(context).pushNamed('/tournament').then((_) => game.resumeEngine());
+Navigator.of(context).pushNamed('/tournament');
                 },
                 onSeasonalEvent: () {
-                  game.pauseEngine();
-                  Navigator.of(context).pushNamed('/seasonal-event').then((_) => game.resumeEngine());
+Navigator.of(context).pushNamed('/seasonal-event');
                 },
               );
             },
@@ -257,7 +254,7 @@ class _MainScreenContentState extends State<MainScreenContent> {
                       return ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: rm.heroes.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
                         itemBuilder: (context, index) {
                           final hero = rm.heroes[index];
                           final isUnlocked = hero.isUnlocked;

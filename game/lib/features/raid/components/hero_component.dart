@@ -1,11 +1,10 @@
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:flutter/material.dart';
 import '../raid_manager.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
-class HeroComponent extends SpriteComponent with HasGameRef {
+class HeroComponent extends SpriteComponent with HasGameReference {
   final RaidManager raidManager;
 
   // Auto Attack
@@ -18,7 +17,7 @@ class HeroComponent extends SpriteComponent with HasGameRef {
 
   @override
   Future<void> onLoad() async {
-    sprite = await gameRef.loadSprite('hero_knight_winter.png');
+    sprite = await game.loadSprite('hero_knight_winter.png');
     size = Vector2(64, 64);
   }
 
@@ -54,9 +53,9 @@ class HeroComponent extends SpriteComponent with HasGameRef {
 
     // Spawn VFX if skill
     if (isSkill) {
-      gameRef.add(
+      game.add(
         SpriteComponent()
-          ..sprite = await gameRef.loadSprite('vfx_ice_shard.png')
+          ..sprite = await game.loadSprite('vfx_ice_shard.png')
           ..position = targetPos
           ..size = Vector2(64, 64)
           ..anchor = Anchor.center

@@ -28,14 +28,14 @@ class EventScreen extends StatelessWidget {
 
   Widget _buildNoEvent() {
     return Scaffold(
-      backgroundColor: MGColors.background,
+      backgroundColor: MGColors.surface,
       appBar: AppBar(
         backgroundColor: MGColors.surface,
         leading: MGIconButton(
           icon: Icons.arrow_back,
           onPressed: onBack,
         ),
-        title: Text('Events', style: MGTextStyles.headline),
+        title: const Text('Events', style: MGTextStyles.h1),
       ),
       body: Center(
         child: Column(
@@ -45,7 +45,7 @@ class EventScreen extends StatelessWidget {
             const SizedBox(height: MGSpacing.md),
             Text(
               'No Active Events',
-              style: MGTextStyles.headline.copyWith(
+              style: MGTextStyles.h1.copyWith(
                 color: MGColors.textMediumEmphasis,
               ),
             ),
@@ -66,7 +66,7 @@ class EventScreen extends StatelessWidget {
     final themeColor = _parseColor(event.themeColor);
 
     return Scaffold(
-      backgroundColor: MGColors.background,
+      backgroundColor: MGColors.surface,
       body: CustomScrollView(
         slivers: [
           // Event Header
@@ -82,7 +82,7 @@ class EventScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 event.name,
-                style: MGTextStyles.headline.copyWith(color: MGColors.textHighEmphasis),
+                style: MGTextStyles.h1.copyWith(color: MGColors.textHighEmphasis),
               ),
               background: Container(
                 decoration: BoxDecoration(
@@ -144,13 +144,13 @@ class EventScreen extends StatelessWidget {
                     children: [
                       Icon(Icons.public, color: themeColor),
                       const SizedBox(width: MGSpacing.sm),
-                      Text('Server Progress', style: MGTextStyles.headline),
+                      const Text('Server Progress', style: MGTextStyles.h1),
                     ],
                   ),
                   const SizedBox(height: MGSpacing.sm),
                   MGLinearProgress(
                     value: eventManager.serverProgress,
-                    color: themeColor,
+                    valueColor: themeColor,
                   ),
                   const SizedBox(height: MGSpacing.xs),
                   Text(
@@ -172,7 +172,7 @@ class EventScreen extends StatelessWidget {
                 children: [
                   Icon(Icons.flag, color: themeColor),
                   const SizedBox(width: MGSpacing.sm),
-                  Text('Milestones', style: MGTextStyles.headline),
+                  const Text('Milestones', style: MGTextStyles.h1),
                 ],
               ),
             ),
@@ -197,7 +197,7 @@ class EventScreen extends StatelessWidget {
                 children: [
                   Icon(Icons.card_giftcard, color: themeColor),
                   const SizedBox(width: MGSpacing.sm),
-                  Text('Rewards', style: MGTextStyles.headline),
+                  const Text('Rewards', style: MGTextStyles.h1),
                 ],
               ),
             ),
@@ -311,7 +311,7 @@ class EventScreen extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: 24),
         const SizedBox(height: MGSpacing.xs),
-        Text(value, style: MGTextStyles.headline.copyWith(color: color)),
+        Text(value, style: MGTextStyles.h1.copyWith(color: color)),
         Text(
           label,
           style: MGTextStyles.caption.copyWith(
@@ -340,7 +340,7 @@ class EventScreen extends StatelessWidget {
             : MGColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: milestone.isClaimed ? themeColor : MGColors.outline,
+          color: milestone.isClaimed ? themeColor : MGColors.border,
         ),
       ),
       child: Row(
@@ -353,7 +353,7 @@ class EventScreen extends StatelessWidget {
               children: [
                 CircularProgressIndicator(
                   value: progress,
-                  backgroundColor: MGColors.outline,
+                  backgroundColor: MGColors.border,
                   color: themeColor,
                   strokeWidth: 4,
                 ),
@@ -408,7 +408,7 @@ class EventScreen extends StatelessWidget {
           // Claim Button
           if (canClaim)
             MGButton(
-              text: 'Claim',
+              label: 'Claim',
               onPressed: () => eventManager.claimMilestone(milestone.id),
               size: MGButtonSize.small,
             )
@@ -430,7 +430,7 @@ class EventScreen extends StatelessWidget {
         color: isUnlocked ? themeColor.withValues(alpha: 0.2) : MGColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isUnlocked ? themeColor : MGColors.outline,
+          color: isUnlocked ? themeColor : MGColors.border,
         ),
       ),
       child: Column(

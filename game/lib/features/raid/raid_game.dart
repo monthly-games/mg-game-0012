@@ -8,7 +8,7 @@ import 'raid_manager.dart';
 import 'components/boss_component.dart';
 import 'components/hero_component.dart';
 
-class RaidGame extends FlameGame with TapDetector {
+class RaidGame extends FlameGame with TapCallbacks {
   final RaidManager raidManager;
 
   RaidGame({required this.raidManager});

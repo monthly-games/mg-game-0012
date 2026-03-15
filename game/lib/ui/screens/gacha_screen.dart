@@ -202,7 +202,7 @@ class _GachaScreenState extends State<GachaScreen> {
           icon: Icons.arrow_back,
           onPressed: widget.onBack,
         ),
-        title: Text('Summon', style: MGTextStyles.h2),
+        title: const Text('Summon', style: MGTextStyles.h2),
       ),
       body: Center(
         child: Column(
@@ -293,7 +293,7 @@ class _GachaScreenState extends State<GachaScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: pools.length,
-        separatorBuilder: (_, __) => const SizedBox(width: MGSpacing.sm),
+        separatorBuilder: (_, _) => const SizedBox(width: MGSpacing.sm),
         itemBuilder: (context, index) {
           final pool = pools[index];
           final isSelected = pool.id == _selectedPoolId;
@@ -563,7 +563,7 @@ class _GachaScreenState extends State<GachaScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline,
+              const Icon(Icons.info_outline,
                   color: _GameConfig.accentColor, size: 18),
               const SizedBox(width: MGSpacing.xs),
               Text('Drop Rates', style: MGTextStyles.body.copyWith(
@@ -843,7 +843,7 @@ class _GachaScreenState extends State<GachaScreen> {
       GachaRarity.normal => MGColors.common,
       GachaRarity.rare => MGColors.rare,
       GachaRarity.superRare => MGColors.epic,
-      GachaRarity.superSuperRare ||
+      GachaRarity.superRare ||
       GachaRarity.ultraRare => const Color(0xFFA335EE),
       GachaRarity.legendary => MGColors.legendary,
     };
@@ -854,7 +854,7 @@ class _GachaScreenState extends State<GachaScreen> {
       GachaRarity.normal => Icons.circle,
       GachaRarity.rare => Icons.diamond,
       GachaRarity.superRare => Icons.auto_awesome,
-      GachaRarity.superSuperRare ||
+      GachaRarity.superRare ||
       GachaRarity.ultraRare => Icons.stars,
       GachaRarity.legendary => Icons.whatshot,
     };

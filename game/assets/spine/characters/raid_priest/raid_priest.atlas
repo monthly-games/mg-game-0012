@@ -1,0 +1,130 @@
+arm_R.png
+size: 196,130
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_R
+  rotate: false
+  xy: 0, 0
+  size: 196, 130
+  orig: 196, 130
+  offset: 0, 0
+  index: -1
+
+arm_R_lower.png
+size: 196,130
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_R_lower
+  rotate: false
+  xy: 0, 0
+  size: 196, 130
+  orig: 196, 130
+  offset: 0, 0
+  index: -1
+
+arm_R_upper.png
+size: 196,130
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_R_upper
+  rotate: false
+  xy: 0, 0
+  size: 196, 130
+  orig: 196, 130
+  offset: 0, 0
+  index: -1
+
+body.png
+size: 234,168
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 0, 0
+  size: 234, 168
+  orig: 234, 168
+  offset: 0, 0
+  index: -1
+
+head.png
+size: 80,101
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+head
+  rotate: false
+  xy: 0, 0
+  size: 80, 101
+  orig: 80, 101
+  offset: 0, 0
+  index: -1
+
+hips.png
+size: 514,881
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hips
+  rotate: false
+  xy: 0, 0
+  size: 514, 881
+  orig: 514, 881
+  offset: 0, 0
+  index: -1
+
+leg_L.png
+size: 57,369
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+leg_L
+  rotate: false
+  xy: 0, 0
+  size: 57, 369
+  orig: 57, 369
+  offset: 0, 0
+  index: -1
+
+leg_L_lower.png
+size: 57,369
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+leg_L_lower
+  rotate: false
+  xy: 0, 0
+  size: 57, 369
+  orig: 57, 369
+  offset: 0, 0
+  index: -1
+
+leg_L_upper.png
+size: 57,369
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+leg_L_upper
+  rotate: false
+  xy: 0, 0
+  size: 57, 369
+  orig: 57, 369
+  offset: 0, 0
+  index: -1
+
+weapon.png
+size: 131,450
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+weapon
+  rotate: false
+  xy: 0, 0
+  size: 131, 450
+  orig: 131, 450
+  offset: 0, 0
+  index: -1
+

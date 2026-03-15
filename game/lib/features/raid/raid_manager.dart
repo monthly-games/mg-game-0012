@@ -100,7 +100,6 @@ class RaidManager extends ChangeNotifier {
   // DPS Tracking
   double _damageDealtTotal = 0.0;
   double _trackingTimer = 0.0;
-  double _currentDps = 0.0;
 
   // Pending Gold (to batch updates)
   double _pendingGold = 0.0;
@@ -131,7 +130,6 @@ class RaidManager extends ChangeNotifier {
     // DPS Calc
     _trackingTimer += dt;
     if (_trackingTimer >= 1.0) {
-      _currentDps =
           _damageDealtTotal / (_totalTime - _timeRemaining + 0.1); // Avoid div0
       _trackingTimer = 0;
       notifyListeners();

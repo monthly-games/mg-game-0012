@@ -149,7 +149,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
           icon: Icons.arrow_back,
           onPressed: widget.onBack,
         ),
-        title: Text('Battle Pass', style: MGTextStyles.h2),
+        title: const Text('Battle Pass', style: MGTextStyles.h2),
       ),
       body: Center(
         child: Column(
@@ -197,14 +197,14 @@ class _BattlePassScreenState extends State<BattlePassScreen>
             SliverToBoxAdapter(child: _buildPremiumCta(season)),
 
           // ── Reward Grid Header ──
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
+              padding: EdgeInsets.fromLTRB(
                   MGSpacing.md, MGSpacing.lg, MGSpacing.md, MGSpacing.sm),
               child: Row(
                 children: [
                   Icon(Icons.card_giftcard, color: _GameConfig.accentColor),
-                  const SizedBox(width: MGSpacing.sm),
+                  SizedBox(width: MGSpacing.sm),
                   Text('Rewards', style: MGTextStyles.h2),
                 ],
               ),
@@ -254,7 +254,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.star, color: _GameConfig.premiumColor, size: 16),
+                const Icon(Icons.star, color: _GameConfig.premiumColor, size: 16),
                 const SizedBox(width: 4),
                 Text(
                   'PREMIUM',
@@ -405,7 +405,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
       ),
       child: Row(
         children: [
-          Icon(Icons.star, color: _GameConfig.premiumColor, size: 32),
+          const Icon(Icons.star, color: _GameConfig.premiumColor, size: 32),
           const SizedBox(width: MGSpacing.md),
           Expanded(
             child: Column(
@@ -701,7 +701,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
       padding: const EdgeInsets.all(MGSpacing.sm),
       physics: const NeverScrollableScrollPhysics(),
       itemCount: missions.length,
-      separatorBuilder: (_, __) => const Divider(
+      separatorBuilder: (_, _) => const Divider(
         height: 1,
         color: MGColors.border,
       ),
@@ -737,7 +737,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
                 ),
                 Center(
                   child: isClaimed
-                      ? Icon(Icons.check,
+                      ? const Icon(Icons.check,
                           color: _GameConfig.accentColor, size: 20)
                       : Text(
                           '${(progress * 100).toInt()}%',
@@ -802,7 +802,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
               size: MGButtonSize.small,
             )
           else if (isClaimed)
-            Icon(Icons.check_circle, color: _GameConfig.accentColor, size: 24)
+            const Icon(Icons.check_circle, color: _GameConfig.accentColor, size: 24)
           else
             const Icon(Icons.lock_outline,
                 color: MGColors.textMediumEmphasis, size: 20),

@@ -1,11 +1,10 @@
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:flutter/material.dart';
 import '../raid_manager.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 
-class BossComponent extends SpriteComponent with HasGameRef {
+class BossComponent extends SpriteComponent with HasGameReference {
   final RaidManager raidManager;
   double _lastHp = 0;
 
@@ -13,7 +12,7 @@ class BossComponent extends SpriteComponent with HasGameRef {
 
   @override
   Future<void> onLoad() async {
-    sprite = await gameRef.loadSprite('boss_ice_golem.png');
+    sprite = await game.loadSprite('boss_ice_golem.png');
     size = Vector2(150, 150); // Big boss
     _lastHp = raidManager.bossHp;
 

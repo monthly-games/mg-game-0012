@@ -15,7 +15,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mg_common_game/core/ui/mg_ui.dart';
-import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
 import 'package:mg_common_game/systems/collection/collection_manager.dart';
 import 'package:mg_common_game/systems/collection/collection.dart';
 
@@ -206,7 +205,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
               ),
             ],
           ),
-          SizedBox(height: MGSpacing.md),
+          const SizedBox(height: MGSpacing.md),
           MGLinearProgress(
             value: overallProgress,
             height: 8,
@@ -225,19 +224,19 @@ class _CollectionScreenState extends State<CollectionScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.collections,
             size: 64,
             color: MGColors.textMediumEmphasis,
           ),
-          SizedBox(height: MGSpacing.md),
+          const SizedBox(height: MGSpacing.md),
           Text(
             'No Collections Yet',
             style: MGTextStyles.h3.copyWith(
               color: MGColors.textHighEmphasis,
             ),
           ),
-          SizedBox(height: MGSpacing.sm),
+          const SizedBox(height: MGSpacing.sm),
           Text(
             'Collections will appear as you unlock items',
             style: MGTextStyles.body.copyWith(
@@ -252,12 +251,12 @@ class _CollectionScreenState extends State<CollectionScreen> {
   // ── Collections list ─────────────────────────────────────
   Widget _buildCollectionsList(List<Collection> collections) {
     return ListView.builder(
-      padding: EdgeInsets.all(MGSpacing.md),
+      padding: const EdgeInsets.all(MGSpacing.md),
       itemCount: collections.length,
       itemBuilder: (context, index) {
         final collection = collections[index];
         return Padding(
-          padding: EdgeInsets.only(bottom: MGSpacing.md),
+          padding: const EdgeInsets.only(bottom: MGSpacing.md),
           child: _buildCollectionCard(collection),
         );
       },
@@ -292,7 +291,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                         color: MGColors.textHighEmphasis,
                       ),
                     ),
-                    SizedBox(height: MGSpacing.xs),
+                    const SizedBox(height: MGSpacing.xs),
                     Text(
                       '$unlockedCount / $totalCount items',
                       style: MGTextStyles.caption.copyWith(
@@ -321,7 +320,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
               ),
             ],
           ),
-          SizedBox(height: MGSpacing.md),
+          const SizedBox(height: MGSpacing.md),
           // Progress bar
           MGLinearProgress(
             value: progress,
@@ -330,7 +329,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
             backgroundColor: MGColors.surfaceDark,
             borderRadius: 4,
           ),
-          SizedBox(height: MGSpacing.md),
+          const SizedBox(height: MGSpacing.md),
           // Milestones
           if (collection.milestoneRewards != null &&
               collection.milestoneRewards!.isNotEmpty)
@@ -339,7 +338,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
           if (isComplete && collection.completionReward != null)
             _buildCompletionReward(collection, completionRewardClaimed),
           // Item grid
-          SizedBox(height: MGSpacing.md),
+          const SizedBox(height: MGSpacing.md),
           _buildItemGrid(collection),
         ],
       ),
@@ -362,7 +361,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
             color: MGColors.textMediumEmphasis,
           ),
         ),
-        SizedBox(height: MGSpacing.sm),
+        const SizedBox(height: MGSpacing.sm),
         Wrap(
           spacing: MGSpacing.sm,
           runSpacing: MGSpacing.sm,
@@ -383,9 +382,9 @@ class _CollectionScreenState extends State<CollectionScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: isClaimed
-                      ? MGColors.success.withOpacity(0.2)
+                      ? MGColors.success.withValues(alpha: 0.2)
                       : isAvailable
-                          ? MGColors.warning.withOpacity(0.2)
+                          ? MGColors.warning.withValues(alpha: 0.2)
                           : MGColors.surfaceDark,
                   border: Border.all(
                     color: isClaimed
@@ -412,7 +411,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                       ),
                     ),
                     if (isClaimed)
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.only(left: MGSpacing.xs),
                         child: Icon(
                           Icons.check,
@@ -426,7 +425,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
             );
           }).toList(),
         ),
-        SizedBox(height: MGSpacing.md),
+        const SizedBox(height: MGSpacing.md),
       ],
     );
   }
@@ -447,7 +446,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
           backgroundColor: claimed ? MGColors.success : MGColors.primaryAction,
           onPressed: claimed ? null : () => _onClaimCompletion(collection.id),
         ),
-        SizedBox(height: MGSpacing.md),
+        const SizedBox(height: MGSpacing.md),
       ],
     );
   }
@@ -481,7 +480,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
   Widget _buildItemTile(CollectionItem item, bool isUnlocked) {
     return Container(
       decoration: BoxDecoration(
-        color: isUnlocked ? item.rarity.color.withOpacity(0.2) : MGColors.surfaceDark,
+        color: isUnlocked ? item.rarity.color.withValues(alpha: 0.2) : MGColors.surfaceDark,
         border: Border.all(
           color: isUnlocked ? item.rarity.color : MGColors.border,
           width: 2,
@@ -506,10 +505,10 @@ class _CollectionScreenState extends State<CollectionScreen> {
           if (!isUnlocked)
             Container(
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.lock,
                 color: MGColors.textHighEmphasis,
                 size: 24,
@@ -523,7 +522,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
   // ── Item placeholder ─────────────────────────────────────
   Widget _buildPlaceholder(CollectionItem item, bool isUnlocked) {
     return Container(
-      color: isUnlocked ? item.rarity.color.withOpacity(0.1) : MGColors.surfaceDark,
+      color: isUnlocked ? item.rarity.color.withValues(alpha: 0.1) : MGColors.surfaceDark,
       child: Center(
         child: Icon(
           Icons.image,
