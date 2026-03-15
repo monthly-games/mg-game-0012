@@ -701,7 +701,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
       padding: const EdgeInsets.all(MGSpacing.sm),
       physics: const NeverScrollableScrollPhysics(),
       itemCount: missions.length,
-      separatorBuilder: (_, _) => const Divider(
+      separatorBuilder: (_, __) => const Divider(
         height: 1,
         color: MGColors.border,
       ),

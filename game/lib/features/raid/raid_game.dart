@@ -68,7 +68,7 @@ class RaidGame extends FlameGame with TapCallbacks {
   }
 
   @override
-  void onTapDown(TapDownInfo info) {
+  void onTapDown(TapDownEvent event) {
     if (raidManager.phase == RaidPhase.active) {
       // Manual skill / tap damage
       // Broadcast tap to hero?? Or just direct damage?

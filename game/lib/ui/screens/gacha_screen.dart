@@ -293,7 +293,7 @@ class _GachaScreenState extends State<GachaScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: pools.length,
-        separatorBuilder: (_, _) => const SizedBox(width: MGSpacing.sm),
+        separatorBuilder: (_, __) => const SizedBox(width: MGSpacing.sm),
         itemBuilder: (context, index) {
           final pool = pools[index];
           final isSelected = pool.id == _selectedPoolId;
