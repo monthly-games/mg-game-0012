@@ -234,7 +234,7 @@ Navigator.of(context).pushNamed('/seasonal-event');
                       _QuickNavButton(
                         icon: Icons.auto_awesome,
                         label: 'Summon',
-                        color: const Color(0xFFFF6B35),
+                        color: MGColors.orangeRed,
                         onTap: () =>
                             setState(() => _showGachaScreen = true),
                       ),

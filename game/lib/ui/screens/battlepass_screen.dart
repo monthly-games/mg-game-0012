@@ -30,7 +30,7 @@ class _GameConfig {
   static const String gameId = 'mg-0012';
   // gameTitle removed — unused (was 'Raid RPG')
   static const Color accentColor = MGColors.gold; // Africa Gold
-  static const Color premiumColor = Color(0xFFFF6B35); // Africa Orange
+  static const Color premiumColor = MGColors.orangeRed; // Africa Orange
 }
 
 class BattlePassScreen extends StatefulWidget {
