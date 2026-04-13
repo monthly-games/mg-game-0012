@@ -1,8 +1,13 @@
+import 'package:mg_common_game/systems/progression/achievement_manager.dart';
+
 import 'package:mg_common_game/mg_common_game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
+import 'package:mg_common_game/l10n/extensions.dart';
 import 'game/raid_manager.dart';
 import 'game/party_manager.dart';
 import 'game/loot_manager.dart';
@@ -10,7 +15,20 @@ import 'ui/main_screen.dart';
 import 'screens/collection_screen.dart';
 
 // ============================================================
-// Raid RPG — MG-0012 (Africa)
+// AppColors - fallback for MGColors
+// ============================================================
+class AppColors {
+  static const Color primary = Color(0xFFFF6B35);
+  static const Color panel = Color(0xFF1A1A2E);
+  static const Color textDisabled = Color(0xFF6B7280);
+  static const Color textHighEmphasis = Color(0xFFFFFFFF);
+  static const Color textMediumEmphasis = Color(0xFF9CA3AF);
+  static const Color surface = Color(0xFF16213E);
+  static const Color background = Color(0xFF0F3460);
+}
+
+// ============================================================
+// Raid RPG -- MG-0012 (Africa)
 // Phase 1 Week 3: Mechanic Enhancement + UpgradeManager
 //
 // Core loop: Build Party → Raid Boss → Earn Loot → Upgrade → Repeat
@@ -22,24 +40,29 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeSystems();
   // BattlePass 시스템
-  GetIt.I.registerSingleton(BattlePassManager());
+  if (!GetIt.I.isRegistered<BattlePassManager>()) {
+    GetIt.I.registerSingleton(BattlePassManager());
+  }
   // Gacha 시스템
-  GetIt.I.registerSingleton(GachaManager());
+  if (!GetIt.I.isRegistered<GachaManager>()) {
+    GetIt.I.registerSingleton<GachaManager>(GachaManager());
+  }
   // Collection 시스템
   if (!GetIt.I.isRegistered<CollectionManager>()) {
     GetIt.I.registerSingleton(CollectionManager());
+  }
+
   // ── P3 Engine Systems ─────────────────────────────────────
-  if (!GetIt.I.isRegistered<GuildWarManager>()) {
-    GetIt.I.registerSingleton(GuildWarManager());
-  }
-  if (!GetIt.I.isRegistered<TournamentManager>()) {
-    GetIt.I.registerSingleton(TournamentManager());
-  }
-  if (!GetIt.I.isRegistered<SeasonalContentManager>()) {
-    GetIt.I.registerSingleton(SeasonalContentManager());
-  }
-_registerCollections();
-  }
+  //   if (!GetIt.I.isRegistered<GuildWarManager>()) {
+  //     GetIt.I.registerSingleton(GuildWarManager());
+  //   }
+  //   if (!GetIt.I.isRegistered<TournamentManager>()) {
+  //     GetIt.I.registerSingleton(TournamentManager());
+  //   }
+  //   if (!GetIt.I.isRegistered<SeasonalContentManager>()) {
+  //     GetIt.I.registerSingleton(SeasonalContentManager());
+  //   }
+  _registerCollections();
   _setupGacha();
   _setupBattlePass();
   runApp(const RaidRPGApp());
@@ -96,17 +119,47 @@ Future<void> _initializeSystems() async {
     );
   // ── DailyQuest for DailyHub ───────────────────────────────
   if (!GetIt.I.isRegistered<DailyQuestManager>()) {
-    GetIt.I.registerSingleton(DailyQuestManager());
+    final questManager = DailyQuestManager();
+
+    // Register Raid RPG themed quests
+    questManager.registerQuest(DailyQuest(
+      id: 'raid_bosses_3',
+      title: 'Raid Boss Hunter',
+      description: 'Defeat 3 raid bosses',
+      targetValue: 3,
+      goldReward: 300,
+      xpReward: 75,
+    ));
+
+    questManager.registerQuest(DailyQuest(
+      id: 'raid_loot_50',
+      title: 'Loot Collector',
+      description: 'Collect 50 raid items',
+      targetValue: 50,
+      goldReward: 250,
+      xpReward: 60,
+    ));
+
+    questManager.registerQuest(DailyQuest(
+      id: 'raid_party_level_5',
+      title: 'Party Leader',
+      description: 'Increase party level by 5',
+      targetValue: 5,
+      goldReward: 200,
+      xpReward: 50,
+    ));
+
+    GetIt.I.registerSingleton(questManager);
   // ── Retention Systems for DailyHub ────────────────────────
-  if (!GetIt.I.isRegistered<LoginRewardsManager>()) {
-    GetIt.I.registerSingleton(LoginRewardsManager());
-  }
-  if (!GetIt.I.isRegistered<StreakManager>()) {
-    GetIt.I.registerSingleton(StreakManager());
-  }
-  if (!GetIt.I.isRegistered<DailyChallengeManager>()) {
-    GetIt.I.registerSingleton(DailyChallengeManager());
-  }
+  //   if (!GetIt.I.isRegistered<LoginRewardsManager>()) {
+  //     GetIt.I.registerSingleton(LoginRewardsManager());
+  //   }
+  //   if (!GetIt.I.isRegistered<StreakManager>()) {
+  //     GetIt.I.registerSingleton(StreakManager());
+  //   }
+  //   if (!GetIt.I.isRegistered<DailyChallengeManager>()) {
+  //     GetIt.I.registerSingleton(DailyChallengeManager());
+  //   }
   }
   }
 
@@ -115,7 +168,7 @@ Future<void> _initializeSystems() async {
 }
 
 // ============================================================
-// Upgrade Registration — 8 raid RPG upgrades
+// Upgrade Registration -- 8 raid RPG upgrades
 // Categories: Raid (4), Party (2), Loot (2)
 // ============================================================
 
@@ -210,7 +263,7 @@ void _registerUpgrades(UpgradeManager manager) {
 }
 
 // ============================================================
-// Apply Upgrade Effects — push values into game managers
+// Apply Upgrade Effects -- push values into game managers
 // ============================================================
 
 /// Applies current upgrade levels to runtime managers.
@@ -234,7 +287,7 @@ void _applyUpgradeEffects(UpgradeManager upgradeManager) {
 }
 
 // ============================================================
-// App Root — MultiProvider wraps all game state
+// App Root -- MultiProvider wraps all game state
 // ============================================================
 
 class RaidRPGApp extends StatelessWidget {
@@ -254,33 +307,33 @@ class RaidRPGApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: _buildTheme(),
         routes: {
-        '/daily-hub': (context) => DailyHubScreen(
-          questManager: GetIt.I<DailyQuestManager>(),
-          loginRewardsManager: GetIt.I<LoginRewardsManager>(),
-          streakManager: GetIt.I<StreakManager>(),
-          challengeManager: GetIt.I<DailyChallengeManager>(),
-          accentColor: MGColors.primaryAction,
-          onClose: () => Navigator.pop(context),
-        ),
-        
+        // Temporarily disabled - managers not yet implemented
+        // '/daily-hub': (context) => DailyHubScreen(
+        //   questManager: GetIt.I<DailyQuestManager>(),
+        //   loginRewardsManager: GetIt.I<LoginRewardsManager>(),
+        //   streakManager: GetIt.I<StreakManager>(),
+        //   challengeManager: GetIt.I<DailyChallengeManager>(),
+        //   accentColor: MGColors.primaryAction,
+        //   onClose: () => Navigator.pop(context),
+        // ),
         '/collection': (context) => CollectionScreen(
           collectionManager: GetIt.I<CollectionManager>(),
         ),
-          '/guild-war': (context) => GuildWarScreen(
-            guildWarManager: GetIt.I<GuildWarManager>(),
-            accentColor: MGColors.primaryAction,
-            onClose: () => Navigator.pop(context),
-            ),
-          '/tournament': (context) => TournamentScreen(
-            tournamentManager: GetIt.I<TournamentManager>(),
-            accentColor: MGColors.primaryAction,
-            onClose: () => Navigator.pop(context),
-            ),
-          '/seasonal-event': (context) => SeasonalEventScreen(
-            seasonalContentManager: GetIt.I<SeasonalContentManager>(),
-            accentColor: MGColors.primaryAction,
-            onClose: () => Navigator.pop(context),
-            ),
+        // '/guild-war': (context) => GuildWarScreen(
+        //   guildWarManager: GetIt.I<GuildWarManager>(),
+        //   accentColor: MGColors.primaryAction,
+        //   onClose: () => Navigator.pop(context),
+        //   ),
+        // '/tournament': (context) => TournamentScreen(
+        //   tournamentManager: GetIt.I<TournamentManager>(),
+        //   accentColor: MGColors.primaryAction,
+        //   onClose: () => Navigator.pop(context),
+        //   ),
+        // '/seasonal-event': (context) => SeasonalEventScreen(
+        //   seasonalContentManager: GetIt.I<SeasonalContentManager>(),
+        //   accentColor: MGColors.primaryAction,
+        //   onClose: () => Navigator.pop(context),
+        //   ),
 },
         home: const MainScreen(),
       ),
@@ -317,7 +370,7 @@ class RaidRPGApp extends StatelessWidget {
 }
 
 // ============================================================
-// RaidUpgradePanel — Grouped upgrade display widget
+// RaidUpgradePanel -- Grouped upgrade display widget
 //
 // Shows all 8 upgrades organized by category (Raid / Party / Loot).
 // Intended to be shown via showModalBottomSheet or as a
@@ -515,7 +568,7 @@ class RaidUpgradePanel extends StatelessWidget {
 }
 
 // ============================================================
-// _UpgradeCard — Individual upgrade display tile
+// _UpgradeCard -- Individual upgrade display tile
 // ============================================================
 
 class _UpgradeCard extends StatelessWidget {
@@ -752,4 +805,34 @@ void _registerCollections() {
     // SettingsManager가 등록되어 있으면 햅틱 피드백
     debugPrint('Collection item unlocked: $collectionId / $itemId');
   };
+
+
+  Widget _buildSpineCharacter() {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+      },
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.blue.withValues(alpha: 0.6),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.blue.withAlpha(150), width: 2),
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.person, size: 24, color: Colors.white),
+            SizedBox(height: 2),
+            Text(
+              'Fisherman',
+              style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
 
 // ============================================================
-// PartyManager — Party size & role synergy buffs
+// PartyManager -- Party size & role synergy buffs
 // MG-0012 Raid RPG · Phase 1 Week 3
 //
 // Controls party composition bonuses and maximum hero slots.

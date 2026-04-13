@@ -260,7 +260,7 @@ class MGRaidHud extends StatelessWidget {
     final percentage = bossMaxHp > 0 ? bossHp / bossMaxHp : 0.0;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(MGSpacing.sm),
       decoration: BoxDecoration(
         color: Colors.black54,
         borderRadius: BorderRadius.circular(12),

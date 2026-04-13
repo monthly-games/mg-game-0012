@@ -3,10 +3,11 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/analytics/analytics_manager.dart';
 import 'package:mg_common_game/core/ui/mg_ui.dart';
 import 'package:mg_common_game/systems/battlepass/battlepass_config.dart';
-import 'package:mg_common_game/systems/battlepass/battlepass_manager.dart';
+import 'package:mg_common_game/systems/battlepass/battlepass_manager.dart';import '../../core/localization/app_localizations.dart';
+
 
 // ============================================================
-// BattlePass Screen — MG-0012 (Raid RPG)
+// BattlePass Screen -- MG-0012 (Raid RPG)
 // Template: Reusable across all MG games
 //
 // Sections:
@@ -23,12 +24,12 @@ import 'package:mg_common_game/systems/battlepass/battlepass_manager.dart';
 //   - battlepass_mission_claim
 // ============================================================
 
-/// Game-specific constants — the ONLY section that varies per game.
+/// Game-specific constants -- the ONLY section that varies per game.
 class _GameConfig {
   _GameConfig._();
 
   static const String gameId = 'mg-0012';
-  // gameTitle removed — unused (was 'Raid RPG')
+  // gameTitle removed -- unused (was 'Raid RPG')
   static const Color accentColor = MGColors.gold; // Africa Gold
   static const Color premiumColor = MGColors.orangeRed; // Africa Orange
 }
@@ -62,7 +63,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
       _analytics?.logScreenView('battlepass_screen');
       _analytics?.logFeatureUsed('battlepass_open');
     } catch (_) {
-      // Analytics not initialized — skip silently in dev
+      // Analytics not initialized -- skip silently in dev
     }
   }
 
@@ -255,7 +256,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.star, color: _GameConfig.premiumColor, size: 16),
-                const SizedBox(width: 4),
+                const SizedBox(width: MGSpacing.xxs),
                 Text(
                   'PREMIUM',
                   style: MGTextStyles.caption.copyWith(
@@ -287,7 +288,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 32),
+                const SizedBox(height: MGSpacing.xl),
                 Icon(Icons.card_membership, size: 48,
                     color: _GameConfig.accentColor.withValues(alpha: 0.7)),
                 const SizedBox(height: MGSpacing.sm),
@@ -381,7 +382,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: MGSpacing.md),
       child: MGButton(
-        label: 'Claim All (${_bp.unclaimedRewardCount})',
+        label: context.l10n.notification_claim_all__bpunclaimedrewardcount,
         onPressed: _claimAll,
       ),
     );
@@ -427,7 +428,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
             ),
           ),
           MGButton(
-            label: '\$${season.premiumPrice.toStringAsFixed(2)}',
+            label: context.l10n.shop_seasonpremiumpricetostringasfixed2,
             onPressed: _purchasePremium,
             size: MGButtonSize.small,
           ),
@@ -513,7 +514,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
           Expanded(
             child: _buildRewardCell(
               rewards: tier.freeRewards,
-              label: 'Free',
+              label: context.l10n.ui_general_free_proto,
               canClaim: canClaimFree,
               isClaimed: isUnlocked && !canClaimFree &&
                   tier.freeRewards.isNotEmpty,
@@ -534,7 +535,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
           Expanded(
             child: _buildRewardCell(
               rewards: tier.premiumRewards,
-              label: 'Premium',
+              label: context.l10n.ui_general_premium_activated,
               canClaim: canClaimPremium,
               isClaimed: isUnlocked && !canClaimPremium &&
                   tier.premiumRewards.isNotEmpty && _bp.isPremium,
@@ -558,7 +559,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
     VoidCallback? onClaim,
   }) {
     if (rewards.isEmpty) {
-      return const SizedBox(height: 48);
+      return const SizedBox(height: MGSpacing.xxl);
     }
 
     final reward = rewards.first;
@@ -797,7 +798,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
           // Claim button
           if (isCompleted && !isClaimed)
             MGButton(
-              label: 'Claim',
+              label: context.l10n.notification_rewardslength_rewards_claimed,
               onPressed: () => _claimMission(mission.id),
               size: MGButtonSize.small,
             )

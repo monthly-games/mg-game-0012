@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
 
 // ============================================================
-// RaidConfigManager — Raid difficulty & boss scaling
+// RaidConfigManager -- Raid difficulty & boss scaling
 // MG-0012 Raid RPG · Phase 1 Week 3
 //
 // Reads upgrade levels from UpgradeManager and exposes computed

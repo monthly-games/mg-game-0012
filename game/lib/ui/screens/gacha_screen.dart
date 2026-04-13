@@ -4,10 +4,11 @@ import 'package:mg_common_game/core/analytics/analytics_manager.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
 import 'package:mg_common_game/core/ui/mg_ui.dart';
 import 'package:mg_common_game/systems/gacha/gacha_manager.dart';
-import 'package:mg_common_game/systems/gacha/gacha_pool.dart';
+import 'package:mg_common_game/systems/gacha/gacha_pool.dart';import '../../core/localization/app_localizations.dart';
+
 
 // ============================================================
-// Gacha Screen — MG-0012 (Raid RPG)
+// Gacha Screen -- MG-0012 (Raid RPG)
 // Template: Reusable across all MG games
 //
 // Sections:
@@ -24,7 +25,7 @@ import 'package:mg_common_game/systems/gacha/gacha_pool.dart';
 //   - gacha_pool_switch
 // ============================================================
 
-/// Game-specific constants — the ONLY section that varies per game.
+/// Game-specific constants -- the ONLY section that varies per game.
 class _GameConfig {
   _GameConfig._();
 
@@ -70,7 +71,7 @@ class _GachaScreenState extends State<GachaScreen> {
       _analytics?.logScreenView('gacha_screen');
       _analytics?.logFeatureUsed('gacha_open');
     } catch (_) {
-      // Analytics not initialized — skip silently in dev
+      // Analytics not initialized -- skip silently in dev
     }
   }
 
@@ -262,7 +263,7 @@ class _GachaScreenState extends State<GachaScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 24),
+                const SizedBox(height: MGSpacing.lg),
                 Icon(Icons.auto_awesome, size: 56,
                     color: _GameConfig.accentColor.withValues(alpha: 0.7)),
                 if (pool.description != null) ...[
@@ -351,17 +352,16 @@ class _GachaScreenState extends State<GachaScreen> {
         children: [
           // Gold display
           Expanded(
-            child: StreamBuilder<int>(
-              stream: _gold.onGoldChanged,
-              initialData: _gold.currentGold,
-              builder: (context, snapshot) {
+            child: ListenableBuilder(
+              listenable: _gold,
+              builder: (context, _) {
                 return Row(
                   children: [
                     const Icon(Icons.monetization_on,
                         color: MGColors.gold, size: 24),
                     const SizedBox(width: MGSpacing.xs),
                     Text(
-                      '${snapshot.data ?? 0}',
+                      '${_gold.currentGold}',
                       style: MGTextStyles.h2.copyWith(
                         color: MGColors.gold,
                         fontWeight: FontWeight.bold,
@@ -443,11 +443,10 @@ class _GachaScreenState extends State<GachaScreen> {
   Widget _buildPullButtons() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: MGSpacing.md),
-      child: StreamBuilder<int>(
-        stream: _gold.onGoldChanged,
-        initialData: _gold.currentGold,
-        builder: (context, snapshot) {
-          final gold = snapshot.data ?? 0;
+      child: ListenableBuilder(
+        listenable: _gold,
+        builder: (context, _) {
+          final gold = _gold.currentGold;
           final canSingle = gold >= _GameConfig.singlePullCost;
           final canMulti = gold >= _GameConfig.multiPullCost;
 
@@ -456,7 +455,7 @@ class _GachaScreenState extends State<GachaScreen> {
               // Single Pull
               Expanded(
                 child: _buildPullButton(
-                  label: 'Summon x1',
+                  label: context.l10n.ui_general_summon_x1,
                   cost: _GameConfig.singlePullCost,
                   enabled: canSingle,
                   onPressed: _pullSingle,
@@ -468,7 +467,7 @@ class _GachaScreenState extends State<GachaScreen> {
               Expanded(
                 flex: 2,
                 child: _buildPullButton(
-                  label: 'Summon x10',
+                  label: context.l10n.ui_general_summon_x10,
                   cost: _GameConfig.multiPullCost,
                   enabled: canMulti,
                   onPressed: _pullMulti,
@@ -532,7 +531,7 @@ class _GachaScreenState extends State<GachaScreen> {
                 Icon(Icons.monetization_on,
                     color: enabled ? MGColors.gold : MGColors.textDisabled,
                     size: 16),
-                const SizedBox(width: 4),
+                const SizedBox(width: MGSpacing.xxs),
                 Text(
                   '$cost',
                   style: MGTextStyles.caption.copyWith(

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
 
 // ============================================================
-// LootManager — Drop rate & rarity system
+// LootManager -- Drop rate & rarity system
 // MG-0012 Raid RPG · Phase 1 Week 3
 //
 // Manages loot table probabilities. Upgrade levels increase

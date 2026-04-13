@@ -1,5 +1,7 @@
+import 'package:mg_common_game/core/ui/layout/mg_spacing.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:mg_common_game/core/ui/theme/app_colors.dart';
 import 'package:mg_common_game/core/ui/theme/app_text_styles.dart';
@@ -14,6 +16,8 @@ import 'screens/battlepass_screen.dart';
 import 'screens/event_screen.dart';
 import 'screens/gacha_screen.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
+import '../core/localization/app_localizations.dart';
+
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -28,7 +32,7 @@ class MainScreen extends StatelessWidget {
 }
 
 // ============================================================
-// _QuickNavButton — Compact navigation button for quick access
+// _QuickNavButton -- Compact navigation button for quick access
 // ============================================================
 
 class _QuickNavButton extends StatelessWidget {
@@ -218,22 +222,22 @@ Navigator.of(context).pushNamed('/seasonal-event');
 
                 const Spacer(),
 
-                // Quick Access — BattlePass & Gacha
+                // Quick Access -- BattlePass & Gacha
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [
                       _QuickNavButton(
                         icon: Icons.card_membership,
-                        label: 'Battle Pass',
+                        label: context.l10n.ui_general_battle_pass,
                         color: MGColors.gold,
                         onTap: () =>
                             setState(() => _showBattlePassScreen = true),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: MGSpacing.xs),
                       _QuickNavButton(
                         icon: Icons.auto_awesome,
-                        label: 'Summon',
+                        label: context.l10n.ui_general_tower_summon,
                         color: MGColors.orangeRed,
                         onTap: () =>
                             setState(() => _showGachaScreen = true),
@@ -241,20 +245,20 @@ Navigator.of(context).pushNamed('/seasonal-event');
                     ],
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: MGSpacing.xxs),
 
                 // Bottom Party Status (Placeholder)
                 // Upgrade Panel
                 Container(
                   height: 160,
                   color: AppColors.panel.withValues(alpha: 0.9),
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(MGSpacing.xs),
                   child: Consumer<RaidManager>(
                     builder: (context, rm, _) {
                       return ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: rm.heroes.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        separatorBuilder: (_, __) => const SizedBox(width: MGSpacing.xs),
                         itemBuilder: (context, index) {
                           final hero = rm.heroes[index];
                           final isUnlocked = hero.isUnlocked;
@@ -308,7 +312,7 @@ Navigator.of(context).pushNamed('/seasonal-event');
                                     color: AppColors.textMediumEmphasis,
                                     size: 24,
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: MGSpacing.xxs),
                                 ],
                                 const Spacer(),
                                 ElevatedButton(
@@ -335,7 +339,7 @@ Navigator.of(context).pushNamed('/seasonal-event');
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: MGSpacing.xs),
                               ],
                             ),
                           );

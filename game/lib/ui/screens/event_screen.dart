@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mg_common_game/core/ui/mg_ui.dart';
 import '../../features/event/event_manager.dart';
+import 'package:mg_common_game/l10n/localization.dart';
+import 'package:mg_common_game/l10n/extensions.dart';
+
 
 class EventScreen extends StatelessWidget {
   final EventManager eventManager;
@@ -392,7 +395,7 @@ class EventScreen extends StatelessWidget {
               Row(
                 children: [
                   const Icon(Icons.monetization_on, color: MGColors.gold, size: 16),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: MGSpacing.xxs),
                   Text(
                     '${milestone.goldReward}',
                     style: MGTextStyles.body.copyWith(color: MGColors.gold),
@@ -408,7 +411,7 @@ class EventScreen extends StatelessWidget {
           // Claim Button
           if (canClaim)
             MGButton(
-              label: 'Claim',
+              label: 'Claim Rewards',
               onPressed: () => eventManager.claimMilestone(milestone.id),
               size: MGButtonSize.small,
             )

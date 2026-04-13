@@ -1,24 +1,31 @@
+import 'package:mg_common_game/mg_common_game.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:mg_common_game/systems/systems.dart';
-import 'package:mg_common_game/systems/gacha/gacha_pool.dart';
-import 'package:mg_common_game/systems/gacha/gacha_manager.dart';
-import 'package:mg_common_game/systems/battlepass/battlepass_config.dart';
-import 'package:mg_common_game/systems/battlepass/battlepass_manager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import 'package:mg_common_game/core/audio/audio_manager.dart';
-import 'package:mg_common_game/core/ui/theme/app_colors.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
-import 'package:mg_common_game/systems/progression/upgrade_manager.dart';
-import 'package:mg_common_game/core/systems/save_manager_helper.dart';
+import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
+import 'package:mg_common_game/l10n/extensions.dart';
 import 'game/raid_manager.dart';
 import 'game/party_manager.dart';
 import 'game/loot_manager.dart';
 import 'ui/main_screen.dart';
+import 'screens/collection_screen.dart';
 
 // ============================================================
-// Raid RPG — MG-0012 (Africa)
+// AppColors - fallback for MGColors
+// ============================================================
+class AppColors {
+  static const Color primary = Color(0xFFFF6B35);
+  static const Color panel = Color(0xFF1A1A2E);
+  static const Color textDisabled = Color(0xFF6B7280);
+  static const Color textHighEmphasis = Color(0xFFFFFFFF);
+  static const Color textMediumEmphasis = Color(0xFF9CA3AF);
+  static const Color surface = Color(0xFF16213E);
+  static const Color background = Color(0xFF0F3460);
+}
+
+// ============================================================
+// Raid RPG -- MG-0012 (Africa)
 // Phase 1 Week 3: Mechanic Enhancement + UpgradeManager
 //
 // Core loop: Build Party → Raid Boss → Earn Loot → Upgrade → Repeat
@@ -36,7 +43,17 @@ void main() async {
   // Collection 시스템
   if (!GetIt.I.isRegistered<CollectionManager>()) {
     GetIt.I.registerSingleton(CollectionManager());
-    _registerCollections();
+  // ── P3 Engine Systems ─────────────────────────────────────
+  //   if (!GetIt.I.isRegistered<GuildWarManager>()) {
+  //     GetIt.I.registerSingleton(GuildWarManager());
+  //   }
+  //   if (!GetIt.I.isRegistered<TournamentManager>()) {
+  //     GetIt.I.registerSingleton(TournamentManager());
+  //   }
+  //   if (!GetIt.I.isRegistered<SeasonalContentManager>()) {
+  //     GetIt.I.registerSingleton(SeasonalContentManager());
+  //   }
+_registerCollections();
   }
   _setupGacha();
   _setupBattlePass();
@@ -92,6 +109,20 @@ Future<void> _initializeSystems() async {
     di.registerSingleton<LootManager>(
       LootManager(upgradeManager),
     );
+  // ── DailyQuest for DailyHub ───────────────────────────────
+  if (!GetIt.I.isRegistered<DailyQuestManager>()) {
+    GetIt.I.registerSingleton(DailyQuestManager());
+  // ── Retention Systems for DailyHub ────────────────────────
+  //   if (!GetIt.I.isRegistered<LoginRewardsManager>()) {
+  //     GetIt.I.registerSingleton(LoginRewardsManager());
+  //   }
+  //   if (!GetIt.I.isRegistered<StreakManager>()) {
+  //     GetIt.I.registerSingleton(StreakManager());
+  //   }
+  //   if (!GetIt.I.isRegistered<DailyChallengeManager>()) {
+  //     GetIt.I.registerSingleton(DailyChallengeManager());
+  //   }
+  }
   }
 
   // Apply upgrade effects to game systems
@@ -99,7 +130,7 @@ Future<void> _initializeSystems() async {
 }
 
 // ============================================================
-// Upgrade Registration — 8 raid RPG upgrades
+// Upgrade Registration -- 8 raid RPG upgrades
 // Categories: Raid (4), Party (2), Loot (2)
 // ============================================================
 
@@ -194,7 +225,7 @@ void _registerUpgrades(UpgradeManager manager) {
 }
 
 // ============================================================
-// Apply Upgrade Effects — push values into game managers
+// Apply Upgrade Effects -- push values into game managers
 // ============================================================
 
 /// Applies current upgrade levels to runtime managers.
@@ -218,7 +249,7 @@ void _applyUpgradeEffects(UpgradeManager upgradeManager) {
 }
 
 // ============================================================
-// App Root — MultiProvider wraps all game state
+// App Root -- MultiProvider wraps all game state
 // ============================================================
 
 class RaidRPGApp extends StatelessWidget {
@@ -237,6 +268,35 @@ class RaidRPGApp extends StatelessWidget {
         title: 'Raid RPG',
         debugShowCheckedModeBanner: false,
         theme: _buildTheme(),
+        routes: {
+        // Temporarily disabled - managers not yet implemented
+        // '/daily-hub': (context) => DailyHubScreen(
+        //   questManager: GetIt.I<DailyQuestManager>(),
+        //   loginRewardsManager: GetIt.I<LoginRewardsManager>(),
+        //   streakManager: GetIt.I<StreakManager>(),
+        //   challengeManager: GetIt.I<DailyChallengeManager>(),
+        //   accentColor: MGColors.primaryAction,
+        //   onClose: () => Navigator.pop(context),
+        // ),
+        '/collection': (context) => CollectionScreen(
+          collectionManager: GetIt.I<CollectionManager>(),
+        ),
+        // '/guild-war': (context) => GuildWarScreen(
+        //   guildWarManager: GetIt.I<GuildWarManager>(),
+        //   accentColor: MGColors.primaryAction,
+        //   onClose: () => Navigator.pop(context),
+        //   ),
+        // '/tournament': (context) => TournamentScreen(
+        //   tournamentManager: GetIt.I<TournamentManager>(),
+        //   accentColor: MGColors.primaryAction,
+        //   onClose: () => Navigator.pop(context),
+        //   ),
+        // '/seasonal-event': (context) => SeasonalEventScreen(
+        //   seasonalContentManager: GetIt.I<SeasonalContentManager>(),
+        //   accentColor: MGColors.primaryAction,
+        //   onClose: () => Navigator.pop(context),
+        //   ),
+},
         home: const MainScreen(),
       ),
     );
@@ -272,7 +332,7 @@ class RaidRPGApp extends StatelessWidget {
 }
 
 // ============================================================
-// RaidUpgradePanel — Grouped upgrade display widget
+// RaidUpgradePanel -- Grouped upgrade display widget
 //
 // Shows all 8 upgrades organized by category (Raid / Party / Loot).
 // Intended to be shown via showModalBottomSheet or as a
@@ -288,7 +348,7 @@ class _UpgradeCategoryStyle {
   // Support cool
   static const Color partyColor = Color(0xFF20B2AA);
   // Reward gold
-  static const Color lootColor = Color(0xFFFFD700);
+  static const Color lootColor = MGColors.gold;
 }
 
 /// Shows the upgrade panel as a modal bottom sheet.
@@ -405,7 +465,7 @@ class RaidUpgradePanel extends StatelessWidget {
                 category.key,
                 category.value,
                 _categoryIcons[category.key] ?? Icons.star,
-                _categoryColors[category.key] ?? Colors.white,
+                _categoryColors[category.key] ?? MGColors.textHighEmphasis,
               );
             }),
           ],
@@ -470,7 +530,7 @@ class RaidUpgradePanel extends StatelessWidget {
 }
 
 // ============================================================
-// _UpgradeCard — Individual upgrade display tile
+// _UpgradeCard -- Individual upgrade display tile
 // ============================================================
 
 class _UpgradeCard extends StatelessWidget {
@@ -638,14 +698,14 @@ void _setupGacha() {
       )),
 
       // SSR (2.7%)
-      GachaItem(
+      const GachaItem(
         id: 'ssr_item_1',
         nameKr: '울트라레어 아이템 1',
         rarity: GachaRarity.ultraRare,
       ),
 
       // UR (0.3%)
-      GachaItem(
+      const GachaItem(
         id: 'ur_item_1',
         nameKr: '레전더리 아이템 1',
         rarity: GachaRarity.legendary,
@@ -658,47 +718,47 @@ void _registerCollections() {
   final collection = GetIt.I<CollectionManager>();
 
   // Characters 컬렉션
-  collection.registerCollection(const Collection(
+  collection.registerCollection(Collection(
     id: 'characters',
     name: '캐릭터',
     description: '모든 캐릭터를 수집하세요',
     items: [
-      CollectionItem(
+      const CollectionItem(
         id: 'char_warrior',
         name: '전사',
         description: '강인한 근접 전투 캐릭터',
         rarity: CollectionRarity.common,
       ),
-      CollectionItem(
+      const CollectionItem(
         id: 'char_mage',
         name: '마법사',
         description: '강력한 마법 공격 캐릭터',
         rarity: CollectionRarity.rare,
       ),
-      CollectionItem(
+      const CollectionItem(
         id: 'char_archer',
         name: '궁수',
         description: '원거리 정밀 공격 캐릭터',
         rarity: CollectionRarity.rare,
       ),
-      CollectionItem(
+      const CollectionItem(
         id: 'char_assassin',
         name: '암살자',
         description: '치명적인 은신 공격 캐릭터',
         rarity: CollectionRarity.epic,
       ),
-      CollectionItem(
+      const CollectionItem(
         id: 'char_healer',
         name: '힐러',
         description: '팀을 치유하는 지원 캐릭터',
         rarity: CollectionRarity.legendary,
       ),
     ],
-    completionReward: CollectionReward(gold: 10000, gems: 500, experience: 2000),
+    completionReward: const CollectionReward(type: RewardType.gold, amount: 10000),
     milestoneRewards: {
-      25: CollectionReward(gold: 1000, gems: 50),
-      50: CollectionReward(gold: 3000, gems: 150),
-      75: CollectionReward(gold: 5000, gems: 300),
+      25: const CollectionReward(type: RewardType.gold, amount: 1000),
+      50: const CollectionReward(type: RewardType.gold, amount: 3000),
+      75: const CollectionReward(type: RewardType.gold, amount: 5000),
     },
   ));
 
