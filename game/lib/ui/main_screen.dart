@@ -1,7 +1,6 @@
 import 'package:mg_common_game/core/ui/layout/mg_spacing.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:mg_common_game/core/ui/theme/app_colors.dart';
 import 'package:mg_common_game/core/ui/theme/app_text_styles.dart';
@@ -16,7 +15,6 @@ import 'screens/battlepass_screen.dart';
 import 'screens/event_screen.dart';
 import 'screens/gacha_screen.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
-import '../core/localization/app_localizations.dart';
 
 
 class MainScreen extends StatelessWidget {
@@ -229,7 +227,7 @@ Navigator.of(context).pushNamed('/seasonal-event');
                     children: [
                       _QuickNavButton(
                         icon: Icons.card_membership,
-                        label: context.l10n.ui_general_battle_pass,
+                        label: 'Battle Pass',
                         color: MGColors.gold,
                         onTap: () =>
                             setState(() => _showBattlePassScreen = true),
@@ -237,7 +235,7 @@ Navigator.of(context).pushNamed('/seasonal-event');
                       const SizedBox(width: MGSpacing.xs),
                       _QuickNavButton(
                         icon: Icons.auto_awesome,
-                        label: context.l10n.ui_general_tower_summon,
+                        label: 'Summon',
                         color: MGColors.orangeRed,
                         onTap: () =>
                             setState(() => _showGachaScreen = true),

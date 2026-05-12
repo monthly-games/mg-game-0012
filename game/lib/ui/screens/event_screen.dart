@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mg_common_game/core/ui/mg_ui.dart';
 import '../../features/event/event_manager.dart';
-import 'package:mg_common_game/l10n/localization.dart';
-import 'package:mg_common_game/l10n/extensions.dart';
 
 
 class EventScreen extends StatelessWidget {

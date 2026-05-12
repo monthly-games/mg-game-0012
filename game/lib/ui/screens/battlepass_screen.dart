@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mg_common_game/core/analytics/analytics_manager.dart';
 import 'package:mg_common_game/core/ui/mg_ui.dart';
 import 'package:mg_common_game/systems/battlepass/battlepass_config.dart';
-import 'package:mg_common_game/systems/battlepass/battlepass_manager.dart';import '../../core/localization/app_localizations.dart';
+import 'package:mg_common_game/systems/battlepass/battlepass_manager.dart';
 
 
 // ============================================================
@@ -382,7 +382,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: MGSpacing.md),
       child: MGButton(
-        label: context.l10n.notification_claim_all__bpunclaimedrewardcount,
+        label: 'Claim all (${_bp.unclaimedRewardCount})',
         onPressed: _claimAll,
       ),
     );
@@ -428,7 +428,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
             ),
           ),
           MGButton(
-            label: context.l10n.shop_seasonpremiumpricetostringasfixed2,
+            label: 'Premium \$${season.premiumPrice.toStringAsFixed(2)}',
             onPressed: _purchasePremium,
             size: MGButtonSize.small,
           ),
@@ -514,7 +514,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
           Expanded(
             child: _buildRewardCell(
               rewards: tier.freeRewards,
-              label: context.l10n.ui_general_free_proto,
+              label: 'Free',
               canClaim: canClaimFree,
               isClaimed: isUnlocked && !canClaimFree &&
                   tier.freeRewards.isNotEmpty,
@@ -535,7 +535,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
           Expanded(
             child: _buildRewardCell(
               rewards: tier.premiumRewards,
-              label: context.l10n.ui_general_premium_activated,
+              label: 'Premium',
               canClaim: canClaimPremium,
               isClaimed: isUnlocked && !canClaimPremium &&
                   tier.premiumRewards.isNotEmpty && _bp.isPremium,
@@ -798,7 +798,7 @@ class _BattlePassScreenState extends State<BattlePassScreen>
           // Claim button
           if (isCompleted && !isClaimed)
             MGButton(
-              label: context.l10n.notification_rewardslength_rewards_claimed,
+              label: 'Claim reward',
               onPressed: () => _claimMission(mission.id),
               size: MGButtonSize.small,
             )

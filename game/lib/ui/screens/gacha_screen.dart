@@ -4,7 +4,7 @@ import 'package:mg_common_game/core/analytics/analytics_manager.dart';
 import 'package:mg_common_game/core/economy/gold_manager.dart';
 import 'package:mg_common_game/core/ui/mg_ui.dart';
 import 'package:mg_common_game/systems/gacha/gacha_manager.dart';
-import 'package:mg_common_game/systems/gacha/gacha_pool.dart';import '../../core/localization/app_localizations.dart';
+import 'package:mg_common_game/systems/gacha/gacha_pool.dart';
 
 
 // ============================================================
@@ -455,7 +455,7 @@ class _GachaScreenState extends State<GachaScreen> {
               // Single Pull
               Expanded(
                 child: _buildPullButton(
-                  label: context.l10n.ui_general_summon_x1,
+                  label: 'Summon x1',
                   cost: _GameConfig.singlePullCost,
                   enabled: canSingle,
                   onPressed: _pullSingle,
@@ -467,7 +467,7 @@ class _GachaScreenState extends State<GachaScreen> {
               Expanded(
                 flex: 2,
                 child: _buildPullButton(
-                  label: context.l10n.ui_general_summon_x10,
+                  label: 'Summon x10',
                   cost: _GameConfig.multiPullCost,
                   enabled: canMulti,
                   onPressed: _pullMulti,
