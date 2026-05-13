@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.monthlygames.game0014">
+    package="com.monthlygames.game0012">
     <application
         android:label="game"
         android:name="${applicationName}"

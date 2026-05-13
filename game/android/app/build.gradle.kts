@@ -1,14 +1,15 @@
 plugins {
     id("com.android.application")
+    // START: FlutterFire Configuration
+    // id("com.google.gms.google-services") // Temporarily disabled - no matching client
+    // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-apply(plugin = "com.google.gms.google-services")
-
 android {
-    namespace = "com.monthlygames.game0014"
+    namespace = "com.monthlygames.game0012"
     compileSdk = flutter.compileSdkVersion
     buildToolsVersion = "34.0.0"
     ndkVersion = flutter.ndkVersion
@@ -32,25 +33,22 @@ android {
         buildConfig = true
     }
 
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.monthlygames.game0014"
+        applicationId = "com.monthlygames.game0012"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = flutter.minSdkVersion  // Patrol requires minSdk 21+
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-    }
 
-    packagingOptions {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+        // Patrol test instrumentation runner
+        testInstrumentationRunner = "leancode.patrol.PatrolRunner"
 
-    lint {
-        checkReleaseBuilds = false
+        // Enable test coverage
+        // // // // testCoverageEnabled = true
     }
 
     buildTypes {
@@ -80,6 +78,10 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = true
+
+            // Enable test coverage for debug builds
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
         }
     }
 }

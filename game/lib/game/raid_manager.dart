@@ -16,7 +16,7 @@ class RaidConstants {
   static const double baseBossHp = 10000.0;
   static const double baseBossRewardGold = 1000.0;
   static const int baseWaveCount = 3;
-  static const double baseDamageMultiplier = 1.0;
+  static const double baseDamageMultiplier = 0.614;
   static const double bossHpScalePerDifficulty = 0.25;
   static const double rewardScalePerLevel = 0.15;
   static const int waveIncreasePerLevel = 1;
