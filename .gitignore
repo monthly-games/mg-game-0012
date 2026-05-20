@@ -1,0 +1,71 @@
+# MG Flutter game .gitignore
+
+# Dart / Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Nested Flutter app layout used by this repo
+game/.dart_tool/
+game/.flutter-plugins
+game/.flutter-plugins-dependencies
+game/.packages
+game/.pub-cache/
+game/.pub/
+game/build/
+
+# Android / Gradle generated files
+.gradle/
+android/.gradle/
+android/app/build/
+game/android/.gradle/
+game/android/app/build/
+local.properties
+android/local.properties
+game/android/local.properties
+
+# iOS / macOS generated files
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+game/ios/Pods/
+game/ios/.symlinks/
+game/ios/Flutter/Flutter.framework
+game/ios/Flutter/Flutter.podspec
+game/ios/Flutter/Generated.xcconfig
+game/ios/Flutter/ephemeral/
+
+# Web / desktop generated outputs
+game/web/.dart_tool/
+game/windows/flutter/ephemeral/
+game/linux/flutter/ephemeral/
+game/macos/Flutter/ephemeral/
+
+# Build artifacts
+*.apk
+*.aab
+*.ipa
+*.app
+*.dill
+*.map
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and test output
+*.log
+coverage/
+test-results/
+screenshots/
