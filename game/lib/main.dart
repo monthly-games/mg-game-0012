@@ -1,838 +1,434 @@
-import 'package:mg_common_game/systems/progression/achievement_manager.dart';
-
-import 'package:mg_common_game/mg_common_game.dart';
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
-import 'package:mg_common_game/core/economy/gold_manager.dart';
-import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
-import 'package:mg_common_game/l10n/extensions.dart';
-import 'game/raid_manager.dart';
-import 'game/party_manager.dart';
-import 'game/loot_manager.dart';
-import 'ui/main_screen.dart';
-import 'screens/collection_screen.dart';
+import 'package:game/game/level_design_config.dart';
+import 'package:game/game/wave_spawn_table.dart';
 
-// ============================================================
-// AppColors - fallback for MGColors
-// ============================================================
-class AppColors {
-  static const Color primary = Color(0xFFFF6B35);
-  static const Color panel = Color(0xFF1A1A2E);
-  static const Color textDisabled = Color(0xFF6B7280);
-  static const Color textHighEmphasis = Color(0xFFFFFFFF);
-  static const Color textMediumEmphasis = Color(0xFF9CA3AF);
-  static const Color surface = Color(0xFF16213E);
-  static const Color background = Color(0xFF0F3460);
+void main() {
+  runApp(const MyApp());
 }
 
-// ============================================================
-// Raid RPG -- MG-0012 (Africa)
-// Phase 1 Week 3: Mechanic Enhancement + UpgradeManager
-//
-// Core loop: Build Party → Raid Boss → Earn Loot → Upgrade → Repeat
-// Subsystems: Raid Config, Party Composition, Loot Tables
-// Upgrades: 8 total (Raid: 4, Party: 2, Loot: 2)
-// ============================================================
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await _initializeSystems();
-  // BattlePass 시스템
-  if (!GetIt.I.isRegistered<BattlePassManager>()) {
-    GetIt.I.registerSingleton(BattlePassManager());
-  }
-  // Gacha 시스템
-  if (!GetIt.I.isRegistered<GachaManager>()) {
-    GetIt.I.registerSingleton<GachaManager>(GachaManager());
-  }
-  // Collection 시스템
-  if (!GetIt.I.isRegistered<CollectionManager>()) {
-    GetIt.I.registerSingleton(CollectionManager());
-  }
-
-  // ── P3 Engine Systems ─────────────────────────────────────
-  //   if (!GetIt.I.isRegistered<GuildWarManager>()) {
-  //     GetIt.I.registerSingleton(GuildWarManager());
-  //   }
-  //   if (!GetIt.I.isRegistered<TournamentManager>()) {
-  //     GetIt.I.registerSingleton(TournamentManager());
-  //   }
-  //   if (!GetIt.I.isRegistered<SeasonalContentManager>()) {
-  //     GetIt.I.registerSingleton(SeasonalContentManager());
-  //   }
-  _registerCollections();
-  _setupGacha();
-  _setupBattlePass();
-  runApp(const RaidRPGApp());
-}
-
-/// Initialize all DI-registered systems in correct dependency order.
-/// mg_common_game systems first, then game-specific managers.
-Future<void> _initializeSystems() async {
-  final di = GetIt.I;
-
-  // ── mg_common_game core systems ──────────────────────────
-  if (!di.isRegistered<AudioManager>()) {
-    di.registerSingleton<AudioManager>(AudioManager());
-  }
-  await di.get<AudioManager>().initialize();
-
-  if (!di.isRegistered<GoldManager>()) {
-    di.registerSingleton<GoldManager>(GoldManager());
-  }
-
-  // Unified Persistence
-  await SaveManagerHelper.setupSaveManager(
-    autoSaveEnabled: true,
-    autoSaveIntervalSeconds: 30,
-  );
-  await SaveManagerHelper.legacyLoadAll();
-
-  // ── Upgrade system ──────────────────────────────────────
-  if (!di.isRegistered<UpgradeManager>()) {
-    final upgrades = UpgradeManager();
-    di.registerSingleton<UpgradeManager>(upgrades);
-    _registerUpgrades(upgrades);
-    await upgrades.loadUpgrades();
-  }
-
-  // ── Game-specific managers ───────────────────────────────
-  final upgradeManager = di.get<UpgradeManager>();
-
-  if (!di.isRegistered<RaidConfigManager>()) {
-    di.registerSingleton<RaidConfigManager>(
-      RaidConfigManager(upgradeManager),
-    );
-  }
-
-  if (!di.isRegistered<PartyManager>()) {
-    di.registerSingleton<PartyManager>(
-      PartyManager(upgradeManager),
-    );
-  }
-
-  if (!di.isRegistered<LootManager>()) {
-    di.registerSingleton<LootManager>(
-      LootManager(upgradeManager),
-    );
-  // ── DailyQuest for DailyHub ───────────────────────────────
-  if (!GetIt.I.isRegistered<DailyQuestManager>()) {
-    final questManager = DailyQuestManager();
-
-    // Register Raid RPG themed quests
-    questManager.registerQuest(DailyQuest(
-      id: 'raid_bosses_3',
-      title: 'Raid Boss Hunter',
-      description: 'Defeat 3 raid bosses',
-      targetValue: 3,
-      goldReward: 300,
-      xpReward: 75,
-    ));
-
-    questManager.registerQuest(DailyQuest(
-      id: 'raid_loot_50',
-      title: 'Loot Collector',
-      description: 'Collect 50 raid items',
-      targetValue: 50,
-      goldReward: 250,
-      xpReward: 60,
-    ));
-
-    questManager.registerQuest(DailyQuest(
-      id: 'raid_party_level_5',
-      title: 'Party Leader',
-      description: 'Increase party level by 5',
-      targetValue: 5,
-      goldReward: 200,
-      xpReward: 50,
-    ));
-
-    GetIt.I.registerSingleton(questManager);
-  // ── Retention Systems for DailyHub ────────────────────────
-  //   if (!GetIt.I.isRegistered<LoginRewardsManager>()) {
-  //     GetIt.I.registerSingleton(LoginRewardsManager());
-  //   }
-  //   if (!GetIt.I.isRegistered<StreakManager>()) {
-  //     GetIt.I.registerSingleton(StreakManager());
-  //   }
-  //   if (!GetIt.I.isRegistered<DailyChallengeManager>()) {
-  //     GetIt.I.registerSingleton(DailyChallengeManager());
-  //   }
-  }
-  }
-
-  // Apply upgrade effects to game systems
-  _applyUpgradeEffects(upgradeManager);
-}
-
-// ============================================================
-// Upgrade Registration -- 8 raid RPG upgrades
-// Categories: Raid (4), Party (2), Loot (2)
-// ============================================================
-
-void _registerUpgrades(UpgradeManager manager) {
-  // ── Raid upgrades (4) ────────────────────────────────────
-
-  manager.registerUpgrade(Upgrade(
-    id: 'raid_difficulty',
-    name: 'Raid Mastery',
-    description: 'Increase raid difficulty for greater rewards. '
-        'Boss HP scales by 25% per level.',
-    maxLevel: 10,
-    baseCost: 200,
-    costMultiplier: 1.6,
-    valuePerLevel: 1.0,
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'boss_rewards',
-    name: 'War Spoils',
-    description: 'Increase gold earned from boss defeats by 15% per level.',
-    maxLevel: 15,
-    baseCost: 150,
-    costMultiplier: 1.45,
-    valuePerLevel: 0.15,
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'wave_bonus',
-    name: 'Endurance Training',
-    description: 'Unlock +1 bonus raid wave per level for extra rewards.',
-    maxLevel: 5,
-    baseCost: 500,
-    costMultiplier: 2.0,
-    valuePerLevel: 1.0,
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'damage_multiplier',
-    name: 'Battle Fury',
-    description: 'Increase all hero damage by 12% per level.',
-    maxLevel: 20,
-    baseCost: 100,
-    costMultiplier: 1.35,
-    valuePerLevel: 0.12,
-  ));
-
-  // ── Party upgrades (2) ───────────────────────────────────
-
-  manager.registerUpgrade(Upgrade(
-    id: 'party_size',
-    name: 'War Band',
-    description: 'Expand maximum party size by 1 hero per level.',
-    maxLevel: 5,
-    baseCost: 800,
-    costMultiplier: 2.2,
-    valuePerLevel: 1.0,
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'role_synergy',
-    name: 'Tactical Formation',
-    description:
-        'Boost party DPS by 8% per level when multiple roles are present.',
-    maxLevel: 10,
-    baseCost: 300,
-    costMultiplier: 1.5,
-    valuePerLevel: 0.08,
-  ));
-
-  // ── Loot upgrades (2) ────────────────────────────────────
-
-  manager.registerUpgrade(Upgrade(
-    id: 'drop_rate',
-    name: 'Treasure Sense',
-    description: 'Increase loot drop rate by 5% per level.',
-    maxLevel: 10,
-    baseCost: 250,
-    costMultiplier: 1.5,
-    valuePerLevel: 0.05,
-  ));
-
-  manager.registerUpgrade(Upgrade(
-    id: 'rarity_chance',
-    name: "Fortune's Favor",
-    description: 'Shift loot rarity toward rare+ items by 3% per level.',
-    maxLevel: 10,
-    baseCost: 400,
-    costMultiplier: 1.7,
-    valuePerLevel: 0.03,
-  ));
-}
-
-// ============================================================
-// Apply Upgrade Effects -- push values into game managers
-// ============================================================
-
-/// Applies current upgrade levels to runtime managers.
-/// Called once at startup and again after each upgrade purchase.
-void _applyUpgradeEffects(UpgradeManager upgradeManager) {
-  final di = GetIt.I;
-
-  // Managers read from UpgradeManager getters directly,
-  // but we notify listeners to trigger UI rebuild.
-  if (di.isRegistered<RaidConfigManager>()) {
-    di.get<RaidConfigManager>().refresh();
-  }
-
-  if (di.isRegistered<PartyManager>()) {
-    di.get<PartyManager>().refresh();
-  }
-
-  if (di.isRegistered<LootManager>()) {
-    di.get<LootManager>().refresh();
-  }
-}
-
-// ============================================================
-// App Root -- MultiProvider wraps all game state
-// ============================================================
-
-class RaidRPGApp extends StatelessWidget {
-  const RaidRPGApp({super.key});
+  static const gameId = 'MG-0012';
+  static const gameTitle = 'Year-End Raid Event RPG';
+  static const coreFunLoop = kCoreFunLoop;
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: GetIt.I<UpgradeManager>()),
-        ChangeNotifierProvider.value(value: GetIt.I<RaidConfigManager>()),
-        ChangeNotifierProvider.value(value: GetIt.I<PartyManager>()),
-        ChangeNotifierProvider.value(value: GetIt.I<LootManager>()),
-      ],
-      child: MaterialApp(
-        title: 'Raid RPG',
-        debugShowCheckedModeBanner: false,
-        theme: _buildTheme(),
-        routes: {
-        // Temporarily disabled - managers not yet implemented
-        // '/daily-hub': (context) => DailyHubScreen(
-        //   questManager: GetIt.I<DailyQuestManager>(),
-        //   loginRewardsManager: GetIt.I<LoginRewardsManager>(),
-        //   streakManager: GetIt.I<StreakManager>(),
-        //   challengeManager: GetIt.I<DailyChallengeManager>(),
-        //   accentColor: MGColors.primaryAction,
-        //   onClose: () => Navigator.pop(context),
-        // ),
-        '/collection': (context) => CollectionScreen(
-          collectionManager: GetIt.I<CollectionManager>(),
+    return MaterialApp(
+      title: gameTitle,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF8E24AA),
+          brightness: Brightness.dark,
         ),
-        // '/guild-war': (context) => GuildWarScreen(
-        //   guildWarManager: GetIt.I<GuildWarManager>(),
-        //   accentColor: MGColors.primaryAction,
-        //   onClose: () => Navigator.pop(context),
-        //   ),
-        // '/tournament': (context) => TournamentScreen(
-        //   tournamentManager: GetIt.I<TournamentManager>(),
-        //   accentColor: MGColors.primaryAction,
-        //   onClose: () => Navigator.pop(context),
-        //   ),
-        // '/seasonal-event': (context) => SeasonalEventScreen(
-        //   seasonalContentManager: GetIt.I<SeasonalContentManager>(),
-        //   accentColor: MGColors.primaryAction,
-        //   onClose: () => Navigator.pop(context),
-        //   ),
-},
-        home: const MainScreen(),
+        useMaterial3: true,
       ),
-    );
-  }
-
-  /// Africa-themed dark mode with warm gold accents.
-  ThemeData _buildTheme() {
-    return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        brightness: Brightness.dark,
-      ),
-      useMaterial3: true,
-      appBarTheme: const AppBarTheme(
-        centerTitle: true,
-        elevation: 0,
-      ),
-      cardTheme: CardThemeData(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// RaidUpgradePanel -- Grouped upgrade display widget
-//
-// Shows all 8 upgrades organized by category (Raid / Party / Loot).
-// Intended to be shown via showModalBottomSheet or as a
-// dedicated screen accessible from the game HUD.
-// ============================================================
-
-/// Accent colors per upgrade category.
-class _UpgradeCategoryStyle {
-  _UpgradeCategoryStyle._();
-
-  // Combat warmth
-  static const Color raidColor = Color(0xFFFF6B35);
-  // Support cool
-  static const Color partyColor = Color(0xFF20B2AA);
-  // Reward gold
-  static const Color lootColor = MGColors.gold;
-}
-
-/// Shows the upgrade panel as a modal bottom sheet.
-///
-/// Usage from any widget with access to BuildContext:
-/// ```dart
-/// IconButton(
-///   onPressed: () => showRaidUpgradePanel(context),
-///   icon: const Icon(Icons.upgrade),
-/// );
-/// ```
-void showRaidUpgradePanel(BuildContext context) {
-  showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => DraggableScrollableSheet(
-      initialChildSize: 0.7,
-      minChildSize: 0.4,
-      maxChildSize: 0.9,
-      builder: (context, scrollController) => Container(
-        decoration: const BoxDecoration(
-          color: AppColors.panel,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-        ),
-        child: RaidUpgradePanel(scrollController: scrollController),
-      ),
-    ),
-  );
-}
-
-/// Groups upgrades by category and displays current level + cost.
-class RaidUpgradePanel extends StatelessWidget {
-  final ScrollController? scrollController;
-
-  const RaidUpgradePanel({super.key, this.scrollController});
-
-  /// Upgrade IDs grouped by category.
-  static const _upgradeCategories = {
-    'Raid': [
-      'raid_difficulty',
-      'boss_rewards',
-      'wave_bonus',
-      'damage_multiplier',
-    ],
-    'Party': ['party_size', 'role_synergy'],
-    'Loot': ['drop_rate', 'rarity_chance'],
-  };
-
-  static const _categoryIcons = {
-    'Raid': Icons.shield,
-    'Party': Icons.group,
-    'Loot': Icons.diamond,
-  };
-
-  static const _categoryColors = {
-    'Raid': _UpgradeCategoryStyle.raidColor,
-    'Party': _UpgradeCategoryStyle.partyColor,
-    'Loot': _UpgradeCategoryStyle.lootColor,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<UpgradeManager>(
-      builder: (context, upgradeManager, _) {
-        return ListView(
-          controller: scrollController,
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Drag handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.textDisabled,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-
-            // Header
-            const Center(
-              child: Text(
-                'UPGRADES',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textHighEmphasis,
-                  letterSpacing: 2.0,
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Center(
-              child: Text(
-                'Spend gold to strengthen your raid',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textMediumEmphasis,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Category sections
-            ..._upgradeCategories.entries.map((category) {
-              return _buildCategorySection(
-                context,
-                upgradeManager,
-                category.key,
-                category.value,
-                _categoryIcons[category.key] ?? Icons.star,
-                _categoryColors[category.key] ?? MGColors.textHighEmphasis,
-              );
-            }),
-          ],
-        );
+      routes: {
+        '/game': (_) => const GameScreen(),
+        '/engine': (_) => const FrameLoopScreen(),
+        '/levels': (_) => const LevelRoadmapScreen(),
+        '/daily': (_) => const DailyHubScreen(),
+        '/retention': (_) => const RetentionHubScreen(),
+        '/guild-war': (_) => const GuildWarScreen(),
+        '/tournament': (_) => const TournamentScreen(),
+        '/seasonal-event': (_) => const SeasonalEventScreen(),
       },
-    );
-  }
-
-  Widget _buildCategorySection(
-    BuildContext context,
-    UpgradeManager upgradeManager,
-    String category,
-    List<String> upgradeIds,
-    IconData icon,
-    Color color,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Category header
-        Row(
-          children: [
-            Icon(icon, color: color, size: 18),
-            const SizedBox(width: 8),
-            Text(
-              category.toUpperCase(),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: color,
-                letterSpacing: 1.5,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Upgrade cards
-        ...upgradeIds.map((id) {
-          final upgrade = upgradeManager.getUpgrade(id);
-          if (upgrade == null) return const SizedBox.shrink();
-          return _UpgradeCard(
-            upgrade: upgrade,
-            accentColor: color,
-            onPurchase: () {
-              final gold = GetIt.I<GoldManager>().currentGold;
-              if (upgradeManager.canAfford(id, gold)) {
-                upgradeManager.purchaseUpgrade(
-                  id,
-                  () => GetIt.I<GoldManager>().currentGold,
-                  (cost) => GetIt.I<GoldManager>().trySpendGold(cost),
-                );
-                _applyUpgradeEffects(upgradeManager);
-              }
-            },
-          );
-        }),
-        const SizedBox(height: 12),
-      ],
+      home: const MainMenuScreen(),
     );
   }
 }
 
-// ============================================================
-// _UpgradeCard -- Individual upgrade display tile
-// ============================================================
+class MainMenuScreen extends StatelessWidget {
+  const MainMenuScreen({super.key});
 
-class _UpgradeCard extends StatelessWidget {
-  final Upgrade upgrade;
-  final Color accentColor;
-  final VoidCallback onPurchase;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Icon(Icons.videogame_asset_rounded, size: 72),
+                  const SizedBox(height: 24),
+                  Text(
+                    MyApp.gameId,
+                    key: const ValueKey('game-id'),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    MyApp.gameTitle,
+                    key: const ValueKey('game-title'),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Core Fun: ${MyApp.coreFunLoop}',
+                    key: const ValueKey('core-fun-loop'),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
+                  FilledButton.icon(
+                    key: const ValueKey('start-game'),
+                    onPressed: () => Navigator.of(context).pushNamed('/game'),
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Text('Start Game'),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    key: const ValueKey('level-roadmap'),
+                    onPressed: () => Navigator.of(context).pushNamed('/levels'),
+                    icon: const Icon(Icons.map_rounded),
+                    label: const Text('Level Roadmap'),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: const [
+                      _MenuAction(
+                        route: '/engine',
+                        buttonKey: ValueKey('engine-loop'),
+                        icon: Icons.memory_rounded,
+                        label: 'Engine',
+                      ),
+                      _MenuAction(
+                        route: '/retention',
+                        buttonKey: ValueKey('rewards'),
+                        icon: Icons.card_giftcard_rounded,
+                        label: 'Rewards',
+                      ),
+                      _MenuAction(
+                        route: '/daily',
+                        buttonKey: ValueKey('daily-quests'),
+                        icon: Icons.today_rounded,
+                        label: 'Daily',
+                      ),
+                      _MenuAction(
+                        route: '/guild-war',
+                        buttonKey: ValueKey('guild-war'),
+                        icon: Icons.groups_rounded,
+                        label: 'Guild',
+                      ),
+                      _MenuAction(
+                        route: '/tournament',
+                        buttonKey: ValueKey('tournament'),
+                        icon: Icons.emoji_events_rounded,
+                        label: 'Tournament',
+                      ),
+                      _MenuAction(
+                        route: '/seasonal-event',
+                        buttonKey: ValueKey('seasonal-event'),
+                        icon: Icons.event_rounded,
+                        label: 'Event',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-  const _UpgradeCard({
-    required this.upgrade,
-    required this.accentColor,
-    required this.onPurchase,
+class _MenuAction extends StatelessWidget {
+  const _MenuAction({
+    required this.route,
+    required this.buttonKey,
+    required this.icon,
+    required this.label,
   });
 
+  final String route;
+  final ValueKey<String> buttonKey;
+  final IconData icon;
+  final String label;
+
   @override
   Widget build(BuildContext context) {
-    final isMaxed = upgrade.currentLevel >= upgrade.maxLevel;
-    final gold = GetIt.I<GoldManager>().currentGold;
-    final canAfford = !isMaxed && gold >= upgrade.costForNextLevel;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: accentColor.withValues(alpha: isMaxed ? 0.2 : 0.4),
-        ),
+    return SizedBox(
+      width: 132,
+      child: OutlinedButton.icon(
+        key: buttonKey,
+        onPressed: () => Navigator.of(context).pushNamed(route),
+        icon: Icon(icon),
+        label: Text(label),
       ),
-      child: Row(
-        children: [
-          // Info section
-          Expanded(
+    );
+  }
+}
+
+class GameScreen extends StatefulWidget {
+  const GameScreen({super.key});
+
+  @override
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  int levelIndex = 0;
+  int goldBank = 0;
+  int xpBank = 0;
+
+  GameLevelDesign get currentLevel => kLevelDesign[levelIndex];
+
+  void completeAction() {
+    setState(() {
+      goldBank += currentLevel.goldReward;
+      xpBank += currentLevel.xpReward;
+      if (levelIndex < kLevelDesign.length - 1) {
+        levelIndex += 1;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final level = currentLevel;
+    final spawn = kWaveSpawnTable[levelIndex];
+    return Scaffold(
+      appBar: AppBar(title: const Text('Game Ready')),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        upgrade.name,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textHighEmphasis,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        'Lv.${upgrade.currentLevel}/${upgrade.maxLevel}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: accentColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
                 Text(
-                  upgrade.description,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textMediumEmphasis,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                  'Primary loop: ${MyApp.coreFunLoop}',
+                  key: const ValueKey('primary-loop'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Level ${level.levelIndex} - ${level.stage}',
+                  key: const ValueKey('level-name'),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Objective: ${level.objective}',
+                  key: const ValueKey('level-objective'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Wave ${level.wave} | Difficulty ${level.difficulty.toStringAsFixed(2)}',
+                  key: const ValueKey('difficulty-label'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Pressure: ${spawn.enemyCount} enemies every '
+                  '${spawn.spawnCadenceSeconds.toStringAsFixed(2)}s',
+                  key: const ValueKey('pressure-label'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                LinearProgressIndicator(
+                  value: (level.levelIndex / kLevelDesign.length).clamp(0.0, 1.0),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Reward bank: $goldBank gold / $xpBank xp',
+                  key: const ValueKey('reward-bank'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  key: const ValueKey('complete-action'),
+                  onPressed: completeAction,
+                  icon: const Icon(Icons.check_circle_rounded),
+                  label: const Text('Complete Action'),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
 
-          // Purchase button
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 80,
-            child: ElevatedButton(
-              onPressed: canAfford ? onPurchase : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    canAfford ? accentColor : AppColors.textDisabled,
-                foregroundColor: AppColors.background,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 8,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                isMaxed ? 'MAX' : '${upgrade.costForNextLevel} G',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
+class _FrameLoopGame extends FlameGame {
+  double elapsedSeconds = 0;
+  int frameTicks = 0;
+
+  @override
+  void update(double dt) {
+    elapsedSeconds += dt;
+    frameTicks += 1;
+    super.update(dt);
+  }
+}
+
+class FrameLoopScreen extends StatelessWidget {
+  const FrameLoopScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Engine Loop')),
+      body: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'GameWidget frame loop is active for runtime input, update, and render validation.',
+              key: ValueKey('engine-loop-status'),
+              textAlign: TextAlign.center,
             ),
           ),
+          Expanded(child: GameWidget(game: _FrameLoopGame())),
         ],
       ),
     );
   }
 }
 
+class LevelRoadmapScreen extends StatelessWidget {
+  const LevelRoadmapScreen({super.key});
 
-void _setupBattlePass() {
-  final bp = GetIt.I<BattlePassManager>();
-
-  final season = BPSeasonBuilder.create28DaySeason(
-    id: 'season_1',
-    nameKr: '시즌 1',
-    startDate: DateTime.now().subtract(const Duration(days: 1)),
-    maxLevel: 50,
-    expPerLevel: 1000,
-  );
-
-  bp.setSeason(season);
-  bp.setMissions(
-    daily: BPSeasonBuilder.createDefaultDailyMissions(),
-    weekly: BPSeasonBuilder.createDefaultWeeklyMissions(),
-  );
-}
-
-
-void _setupGacha() {
-  final gacha = GetIt.I<GachaManager>();
-
-  gacha.registerPool(GachaPool(
-    id: 'standard_pool',
-    nameKr: '스탠다드 뽑기',
-    items: [
-      // N (50%)
-      ...List.generate(20, (i) => GachaItem(
-        id: 'n_item_$i',
-        nameKr: '일반 아이템 $i',
-        rarity: GachaRarity.normal,
-      )),
-
-      // R (35%)
-      ...List.generate(10, (i) => GachaItem(
-        id: 'r_item_$i',
-        nameKr: '레어 아이템 $i',
-        rarity: GachaRarity.rare,
-      )),
-
-      // SR (12%)
-      ...List.generate(5, (i) => GachaItem(
-        id: 'sr_item_$i',
-        nameKr: '슈퍼레어 아이템 $i',
-        rarity: GachaRarity.superRare,
-      )),
-
-      // SSR (2.7%)
-      const GachaItem(
-        id: 'ssr_item_1',
-        nameKr: '울트라레어 아이템 1',
-        rarity: GachaRarity.ultraRare,
-      ),
-
-      // UR (0.3%)
-      const GachaItem(
-        id: 'ur_item_1',
-        nameKr: '레전더리 아이템 1',
-        rarity: GachaRarity.legendary,
-      ),
-    ],
-  ));
-}
-
-void _registerCollections() {
-  final collection = GetIt.I<CollectionManager>();
-
-  // Characters 컬렉션
-  collection.registerCollection(Collection(
-    id: 'characters',
-    name: '캐릭터',
-    description: '모든 캐릭터를 수집하세요',
-    items: [
-      const CollectionItem(
-        id: 'char_warrior',
-        name: '전사',
-        description: '강인한 근접 전투 캐릭터',
-        rarity: CollectionRarity.common,
-      ),
-      const CollectionItem(
-        id: 'char_mage',
-        name: '마법사',
-        description: '강력한 마법 공격 캐릭터',
-        rarity: CollectionRarity.rare,
-      ),
-      const CollectionItem(
-        id: 'char_archer',
-        name: '궁수',
-        description: '원거리 정밀 공격 캐릭터',
-        rarity: CollectionRarity.rare,
-      ),
-      const CollectionItem(
-        id: 'char_assassin',
-        name: '암살자',
-        description: '치명적인 은신 공격 캐릭터',
-        rarity: CollectionRarity.epic,
-      ),
-      const CollectionItem(
-        id: 'char_healer',
-        name: '힐러',
-        description: '팀을 치유하는 지원 캐릭터',
-        rarity: CollectionRarity.legendary,
-      ),
-    ],
-    completionReward: const CollectionReward(type: RewardType.gold, amount: 10000),
-    milestoneRewards: {
-      25: const CollectionReward(type: RewardType.gold, amount: 1000),
-      50: const CollectionReward(type: RewardType.gold, amount: 3000),
-      75: const CollectionReward(type: RewardType.gold, amount: 5000),
-    },
-  ));
-
-  // 아이템 해제 콜백 (햅틱 피드백)
-  collection.onItemUnlocked = (collectionId, itemId) {
-    // SettingsManager가 등록되어 있으면 햅틱 피드백
-    debugPrint('Collection item unlocked: $collectionId / $itemId');
-  };
-
-
-  Widget _buildSpineCharacter() {
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-      },
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.blue.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.blue.withAlpha(150), width: 2),
-        ),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person, size: 24, color: Colors.white),
-            SizedBox(height: 2),
-            Text(
-              'Fisherman',
-              style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Level Roadmap')),
+      body: ListView.builder(
+        key: const ValueKey('level-list'),
+        padding: const EdgeInsets.all(16),
+        itemCount: kLevelDesign.length,
+        itemBuilder: (context, index) {
+          final level = kLevelDesign[index];
+          final spawn = kWaveSpawnTable[index];
+          return ListTile(
+            leading: CircleAvatar(child: Text('${level.levelIndex}')),
+            title: Text('Level ${level.levelIndex} - ${level.stage}'),
+            subtitle: Text(
+              'Wave ${level.wave} | difficulty ${level.difficulty.toStringAsFixed(2)} | '
+              '${spawn.enemyCount} enemies | reward ${level.goldReward}g/${level.xpReward}xp',
             ),
-          ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class DailyHubScreen extends StatelessWidget {
+  const DailyHubScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const _SimpleScreen(
+      title: 'Daily Quests',
+      detail: 'Short goals keep the fun loop moving.',
+      icon: Icons.today_rounded,
+    );
+  }
+}
+
+class RetentionHubScreen extends StatelessWidget {
+  const RetentionHubScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const _SimpleScreen(
+      title: 'Rewards',
+      detail: 'Progression loop: return, claim, improve.',
+      icon: Icons.card_giftcard_rounded,
+    );
+  }
+}
+
+class GuildWarScreen extends StatelessWidget {
+  const GuildWarScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const _SimpleScreen(
+      title: 'Guild War',
+      detail: 'Social competition is reachable from the main loop.',
+      icon: Icons.groups_rounded,
+    );
+  }
+}
+
+class TournamentScreen extends StatelessWidget {
+  const TournamentScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const _SimpleScreen(
+      title: 'Tournament',
+      detail: 'Competitive goals are available for mastery.',
+      icon: Icons.emoji_events_rounded,
+    );
+  }
+}
+
+class SeasonalEventScreen extends StatelessWidget {
+  const SeasonalEventScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const _SimpleScreen(
+      title: 'Seasonal Event',
+      detail: 'Timed content gives the loop a fresh reason to return.',
+      icon: Icons.event_rounded,
+    );
+  }
+}
+
+class _SimpleScreen extends StatelessWidget {
+  const _SimpleScreen({required this.title, required this.detail, required this.icon});
+
+  final String title;
+  final String detail;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 56),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                key: const ValueKey('screen-title'),
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(detail, key: const ValueKey('screen-detail'), textAlign: TextAlign.center),
+            ],
+          ),
         ),
       ),
     );
   }
-
 }
