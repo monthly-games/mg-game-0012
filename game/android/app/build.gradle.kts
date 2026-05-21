@@ -1,3 +1,16 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+        freeCompilerArgs.addAll(
+            listOf("-opt-in=kotlin.OptIn",
+            "-Xcontext-receivers",
+            "-Xwhen-guards")
+        )
+    }
+}
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -20,14 +33,6 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        freeCompilerArgs += listOf(
-            "-opt-in=kotlin.OptIn",
-            "-Xcontext-receivers",
-            "-Xwhen-guards"
-        )
-    }
 
     buildFeatures {
         buildConfig = true
