@@ -39,7 +39,13 @@ class HeroComponent extends SpriteComponent with HasGameReference {
 
   Future<void> _performAttack(bool isSkill) async {
     final damage = isSkill ? _skillDamage : _autoDamage;
-    raidManager.dealDamage(damage);
+
+    // Add combo for skill usage
+    if (isSkill) {
+      raidManager.addPlayerCombo();
+    }
+
+    raidManager.dealDamage(damage, isSkillDamage: isSkill);
 
     // Audio
     if (isSkill) {

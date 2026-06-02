@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../event/event_manager.dart';
 import 'package:mg_common_game/core/ui/theme/mg_colors.dart';
+import 'combo_manager.dart';
 
 enum RaidPhase { active, victory, defeat }
 
@@ -97,6 +98,9 @@ class RaidManager extends ChangeNotifier {
 
   List<RaidHero> get heroes => _heroes;
 
+  // Combo System
+  final ComboManager comboManager = ComboManager();
+
   // DPS Tracking
   double _damageDealtTotal = 0.0;
   double _trackingTimer = 0.0;
@@ -107,6 +111,11 @@ class RaidManager extends ChangeNotifier {
   RaidManager() {
     _eventManager = EventManager();
     _loadState();
+  }
+
+  // Add combo when player uses skill
+  void addPlayerCombo() {
+    comboManager.addCombo();
   }
 
   void update(double dt) {
@@ -134,19 +143,25 @@ class RaidManager extends ChangeNotifier {
       _trackingTimer = 0;
       notifyListeners();
     }
+
+    // Update combo system
+    comboManager.update(dt);
   }
 
-  void dealDamage(double amount) {
+  void dealDamage(double amount, {bool isSkillDamage = false}) {
     if (_phase != RaidPhase.active) return;
 
-    _bossHp -= amount;
-    _damageDealtTotal += amount;
+    // Apply combo multiplier for skill damage
+    final finalDamage = isSkillDamage ? amount * comboManager.damageMultiplier : amount;
+
+    _bossHp -= finalDamage;
+    _damageDealtTotal += finalDamage;
 
     // Track damage for event milestones
-    _eventManager?.addDamage(amount.toInt());
+    _eventManager?.addDamage(finalDamage.toInt());
 
     // Reward: 1 Gold per 100 Damage (tuned for balance)
-    _pendingGold += amount * 0.01;
+    _pendingGold += finalDamage * 0.01;
     if (_pendingGold >= 1.0) {
       int goldToAdd = _pendingGold.floor();
       GetIt.I<GoldManager>().addGold(goldToAdd);
@@ -185,6 +200,7 @@ class RaidManager extends ChangeNotifier {
     _timeRemaining = _totalTime;
     _damageDealtTotal = 0;
     _phase = RaidPhase.active;
+    comboManager.resetCombo();
     _eventManager?.recordRaidParticipation();
     notifyListeners();
   }

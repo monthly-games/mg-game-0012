@@ -21,7 +21,7 @@ plugins {
 apply(plugin = "com.google.gms.google-services")
 
 android {
-    namespace = "com.monthlygames.game0014"
+    namespace = "com.monthlygames.game0012"
     compileSdk = flutter.compileSdkVersion
     buildToolsVersion = "34.0.0"
     ndkVersion = flutter.ndkVersion
@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.monthlygames.game0014"
+        applicationId = "com.monthlygames.game0012"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -77,7 +77,7 @@ android {
 
             // Optimize APK size
             ndk {
-                debugSymbolLevel = "NONE"
+                debugSymbolLevel = "SYMBOL_TABLE"
             }
         }
         debug {
